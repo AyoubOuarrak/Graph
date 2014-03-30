@@ -5,13 +5,12 @@
 #include <cstdlib>
 #include <ctime>
 #include "Graph.hh"
-#include "utility.hh"
+#include "Utility.hh"
 
 int Graph::random = 0;
 int Graph::circular = 1;
 
-Graph::Graph() {
-}
+Graph::Graph() { }
 
 Graph Graph::generateRandomGraph(int maxVertex) {
    srand(time(NULL));
