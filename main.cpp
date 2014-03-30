@@ -1,5 +1,7 @@
+#include <stdexcept>
 #include "Graph.hh"
 #include <iostream>
+
 
 int main() {
 
@@ -14,9 +16,14 @@ int main() {
    G4.addVertex("y");
    G4.addVertex("j");
 
-   G4.addEdge("h", "j");
-   G4.addEdge("j", "y", 5);
-   G4.addEdge("y", "h");
+   try {
+      G4.addEdge("h", "j");
+      G4.addEdge("j", "y", 5);
+      G4.addEdge("y", "h");
+   }
+   catch(std::exception e) {
+      std::cout << e.what();
+   }
 
 
    G1.print();

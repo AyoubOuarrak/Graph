@@ -51,17 +51,27 @@ void Graph::generateGraph(int edgeType) {
             int randVertex1 = rand() % _vertex.size();
             int randVertex2 = rand() % _vertex.size();
             if(randVertex1 != randVertex2)
-               addEdge(_vertex.at(randVertex1), _vertex.at(randVertex2));
+               try {
+                  addEdge(_vertex.at(randVertex1), _vertex.at(randVertex2));
+               }
+               catch(std::exception e) {
+                  std::cout << e.what();
+               }
          }
       }
       case 1: { // circular
          std::vector<std::string>::const_iterator it;
          std::string initialVertex = _vertex.at(0);
          for(it = _vertex.begin(); it != _vertex.end(); ++it) {
-            if(it + 1 != _vertex.end())
-               addEdge(*it, *(it + 1));
-            else
-               addEdge(*it, initialVertex);
+            try {
+               if(it + 1 != _vertex.end())
+                  addEdge(*it, *(it + 1));
+               else
+                  addEdge(*it, initialVertex);
+            }
+            catch(std::exception e) {
+               std::cout << e.what();
+            }
          }
       }
    }
