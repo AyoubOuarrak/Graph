@@ -7,21 +7,17 @@
 #include "Graph.hh"
 #include "Utility.hh"
 
+typedef std::pair<std::string, std::string> link;
 int Graph::random = 0;
 int Graph::circular = 1;
 
-Graph::Graph() { }
+Graph::Graph() {
+}
 
-Graph Graph::generateRandomGraph(int maxVertex) {
-   srand(time(NULL));
-   int fromInt = rand() % maxVertex;
-   int toInt = rand() % maxVertex;
-   std::string ivt = std::min(utility::to_string(fromInt), utility::to_string(toInt)) +
-                     "-" +
-                     std::max(utility::to_string(toInt), utility::to_string(fromInt));
-   Graph G(ivt, Graph::random);
-
-   return G;
+Graph::Graph(const Graph& G) {
+   _vertex = G._Vertex();
+   _edge = G._Edge();
+   _edgeWeight = G._EdgeWeight();
 }
 
 Graph::Graph(std::string regex, int edgeType) {
@@ -77,6 +73,18 @@ void Graph::generateGraph(int edgeType) {
    }
 }
 
+Graph Graph::generateRandomGraph(int maxVertex) {
+   srand(time(NULL));
+   int fromInt = rand() % maxVertex;
+   int toInt = rand() % maxVertex;
+   std::string ivt = std::min(utility::to_string(fromInt), utility::to_string(toInt)) +
+                     "-" +
+                     std::max(utility::to_string(toInt), utility::to_string(fromInt));
+   Graph G(ivt, Graph::random);
+
+   return G;
+}
+
 void Graph::addVertex(std::string node) {
    _vertex.push_back(node);
 }
@@ -120,6 +128,18 @@ double Graph::weight(std::string fromNode, std::string toNode) const {
 
 unsigned Graph::vertex() const {
    return _vertex.size();
+}
+
+std::vector<std::string> Graph::_Vertex() const {
+   return _vertex;
+}
+
+std::vector<link> Graph::_Edge() const {
+   return _edge;
+}
+
+std::map<link, double> Graph::_EdgeWeight() const {
+   return _edgeWeight;
 }
 
 unsigned Graph::edge() const {

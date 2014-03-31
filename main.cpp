@@ -5,10 +5,11 @@
 
 int main() {
 
-   Graph G1 = Graph::generateRandomGraph(5); // 5:=  max vertex
+   Graph G1 = Graph::generateRandomGraph(10); // 10:=  max vertex
    Graph G2("a-g", Graph::circular);
    Graph G3("1-5", Graph::random);
    Graph G4;
+   Graph G5(G1);
 
    G2.setWeight("c", "d", 6);
 
@@ -24,10 +25,24 @@ int main() {
    catch(std::exception e) {
       std::cout << e.what();
    }
-
-
+   std::cout << "-----------------------------------" << std::endl
+             << "            Random Graph           " << std::endl
+             << "-----------------------------------" << std::endl;
    G1.print();
+   std::cout << "---------------------------------------" << std::endl
+             << " interval:<a-g>  using Graph::circular " << std::endl
+             << "---------------------------------------" << std::endl;
    G2.print();
+   std::cout << "---------------------------------------" << std::endl
+             << " interval:<1-5>  using Graph::random   " << std::endl
+             << "---------------------------------------" << std::endl;
    G3.print();
+   std::cout << "-----------------------------------" << std::endl
+             << "        default constructor        " << std::endl
+             << "-----------------------------------" << std::endl;
    G4.print();
+   std::cout << "-----------------------------------" << std::endl
+             << "           copy constructor        " << std::endl
+             << "-----------------------------------" << std::endl;
+   G5.print();
 }

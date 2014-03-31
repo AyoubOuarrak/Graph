@@ -15,7 +15,7 @@ public:
 
    Graph();
    Graph(std::string, int);  // add vertex using regex eg. G("A-Z"), G(1-5), G(12-82)
-   Graph(const Graph&);
+   Graph(const Graph&); //copy ctr
 
    void   generateGraph(int);  // generate edge to connect the Graph, using random/circular method.
    void   addVertex(std::string node);
@@ -42,5 +42,9 @@ private:
    std::vector<std::string> _vertex;
    std::vector<link>        _edge;
    std::map<link, double>   _edgeWeight;
+
+   std::vector<std::string> _Vertex() const;  // return vector vertex
+   std::vector<link>        _Edge() const;    // return vector edge
+   std::map<link, double>   _EdgeWeight() const;  //return map edgeWeight
 };
 #endif // GRAPH_HH
