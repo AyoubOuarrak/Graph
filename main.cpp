@@ -2,13 +2,14 @@
 #include "Graph.hh"
 #include <iostream>
 
+using namespace GraphLib;
 
 int main() {
 
    Graph G1 = Graph::generateRandomGraph(10); // 10:=  max vertex
    Graph G2("a-g", Graph::circular);
-   Graph G3("1-5", Graph::random);
-   Graph G4;
+   Graph G3("1-5", Graph::random, Graph::undirected);
+   Graph G4(Graph::undirected);
    Graph G5(G1);
 
    G2.setWeight("c", "d", 6);
