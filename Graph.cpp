@@ -7,11 +7,16 @@
 #include "Graph.hh"
 #include "Utility.hh"
 
+using namespace GraphLib;
+
 typedef std::pair<std::string, std::string> link;
 int Graph::random = 0;
 int Graph::circular = 1;
+bool Graph::directed = true;
+bool Graph::undirected = false;
 
-Graph::Graph() {
+Graph::Graph(bool graphType) {
+   direct = graphType;
 }
 
 Graph::Graph(const Graph& G) {
@@ -20,8 +25,9 @@ Graph::Graph(const Graph& G) {
    _edgeWeight = G._EdgeWeight();
 }
 
-Graph::Graph(std::string regex, int edgeType) {
+Graph::Graph(std::string regex, int edgeType, bool graphType) {
    // loading the vertex vector
+   direct = graphType;
    if(utility::checkIfInterval(regex)) {
       if(regex.length() == 3) {  //1-9,  a-z,  A-Z ..
          std::vector<char> tmp = utility::regexChar(regex);
@@ -43,7 +49,7 @@ void Graph::generateGraph(int edgeType) {
    switch(edgeType) {
       case 0: { // random
          srand(time(NULL));
-         for(int i = 0; i < _vertex.size(); ++i) {
+         for(unsigned i = 0; i < _vertex.size(); ++i) {
             int randVertex1 = rand() % _vertex.size();
             int randVertex2 = rand() % _vertex.size();
             if(randVertex1 != randVertex2)
@@ -73,27 +79,36 @@ void Graph::generateGraph(int edgeType) {
    }
 }
 
-Graph Graph::generateRandomGraph(int maxVertex) {
+Graph Graph::generateRandomGraph(int maxVertex, bool graphType) {
    srand(time(NULL));
    int fromInt = rand() % maxVertex;
    int toInt = rand() % maxVertex;
    std::string ivt = std::min(utility::to_string(fromInt), utility::to_string(toInt)) +
                      "-" +
                      std::max(utility::to_string(toInt), utility::to_string(fromInt));
-   Graph G(ivt, Graph::random);
+   Graph G(ivt, Graph::random, graphType);
 
    return G;
 }
 
 void Graph::addVertex(std::string node) {
-   _vertex.push_back(node);
+      _vertex.push_back(node);
 }
 
 void Graph::addEdge(std::string fromNode, std::string toNode, double cost) {
    if(std::find(_vertex.begin(), _vertex.end(), fromNode) != _vertex.end() &&
       std::find(_vertex.begin(), _vertex.end(), toNode)   != _vertex.end()) {
-      _edge.push_back(std::make_pair(fromNode, toNode));
-      _edgeWeight[std::make_pair(fromNode, toNode)] = cost;
+
+      if(direct) {
+         _edge.push_back(std::make_pair(fromNode, toNode));
+         _edgeWeight[std::make_pair(fromNode, toNode)] = cost;
+      }
+      else { //undirected graph
+         _edge.push_back(std::make_pair(fromNode, toNode));
+         _edge.push_back(std::make_pair(toNode, fromNode));
+         _edgeWeight[std::make_pair(fromNode, toNode)] = cost;
+         _edgeWeight[std::make_pair(toNode, fromNode)] = cost;
+      }
    }
    else throw std::out_of_range("invalid edge");
 }
@@ -101,17 +116,15 @@ void Graph::addEdge(std::string fromNode, std::string toNode, double cost) {
 void Graph::setWeight(std::string fromNode, std::string toNode, double cost) {
    if(std::find(_vertex.begin(), _vertex.end(), fromNode) != _vertex.end() &&
       std::find(_vertex.begin(), _vertex.end(), toNode)   != _vertex.end()) {
-      _edgeWeight[std::make_pair(fromNode, toNode)] = cost;
-   }
-}
 
-void Graph::addEdge(std::string fromNode, std::string toNode) {
-   if(std::find(_vertex.begin(), _vertex.end(), fromNode) != _vertex.end() &&
-      std::find(_vertex.begin(), _vertex.end(), toNode)   != _vertex.end()) {
-      _edge.push_back(std::make_pair(fromNode, toNode));
-      _edgeWeight[std::make_pair(fromNode, toNode)] = 0;
+      if(direct) {
+         _edgeWeight[std::make_pair(fromNode, toNode)] = cost;
+      }
+      else { // undirected Graph
+         _edgeWeight[std::make_pair(fromNode, toNode)] = cost;
+         _edgeWeight[std::make_pair(toNode, fromNode)] = cost;
+      }
    }
-   else throw std::out_of_range("invalid edge");
 }
 
 bool Graph::hasEdge(std::string fromNode, std::string toNode) const {
