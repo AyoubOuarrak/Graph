@@ -26,7 +26,6 @@ Graph::Graph(const Graph& G) {
 }
 
 Graph::Graph(std::string regex, int edgeType, bool graphType) {
-   // loading the vertex vector
    direct = graphType;
    if(utility::checkIfInterval(regex)) {
       if(regex.length() == 3) {  //1-9,  a-z,  A-Z ..
@@ -42,6 +41,8 @@ Graph::Graph(std::string regex, int edgeType, bool graphType) {
             _vertex.push_back(utility::to_string(*it));
       }
    }
+   else throw std::invalid_argument("invalid interval");
+
    generateGraph(edgeType);
 }
 
@@ -86,8 +87,8 @@ Graph Graph::generateRandomGraph(int maxVertex, bool graphType) {
    std::string ivt = std::min(utility::to_string(fromInt), utility::to_string(toInt)) +
                      "-" +
                      std::max(utility::to_string(toInt), utility::to_string(fromInt));
-   Graph G(ivt, Graph::random, graphType);
 
+   Graph G(ivt, Graph::random, graphType);
    return G;
 }
 
@@ -125,6 +126,7 @@ void Graph::setWeight(std::string fromNode, std::string toNode, double cost) {
          _edgeWeight[std::make_pair(toNode, fromNode)] = cost;
       }
    }
+   else throw std::out_of_range("invalid edge");
 }
 
 bool Graph::hasEdge(std::string fromNode, std::string toNode) const {
@@ -139,45 +141,34 @@ double Graph::weight(std::string fromNode, std::string toNode) const {
    else throw std::out_of_range("invalid edge");
 }
 
-unsigned Graph::vertex() const {
-   return _vertex.size();
-}
-
-std::vector<std::string> Graph::_Vertex() const {
-   return _vertex;
-}
-
-std::vector<link> Graph::_Edge() const {
-   return _edge;
-}
-
-std::map<link, double> Graph::_EdgeWeight() const {
-   return _edgeWeight;
-}
-
-unsigned Graph::edge() const {
-   return _edge.size();
-}
-
-void Graph::print() const {
+void Graph::print(std::ostream& os) const {
    std::vector<std::string>::const_iterator V;
    std::vector<link>::const_iterator E;
 
-   std::cout << "Vertex : { ";
+   os << "Vertex : { ";
    for(V = _vertex.begin(); V != _vertex.end(); ++V) {
-      std::cout << *V;
+      os << *V;
       if(V + 1 != _vertex.end())
-         std::cout << " , ";
+         os << " , ";
    }
 
-   std::cout << " }" << std::endl;
+   os << " }" << std::endl << "Edge : { " << std::endl;
 
-   std::cout << "Edge : { " << std::endl;
    for(E = _edge.begin();  E != _edge.end(); ++E)
-      std::cout << "\t( "
+      os << "\t( "
                 << E->first  << " , " << E->second
                 << " ) "
                 << " weight: " << _edgeWeight.at(*E) << std::endl;
 
-   std::cout << std::endl << "}" << std::endl;
+   os << std::endl << "}" << std::endl;
+}
+
+std::set<std::string> Graph::adjacent(std::string v) const {
+   std::set<std::string> adjV;
+   std::vector<link>::const_iterator E;
+   for(E = _edge.begin(); E != _edge.end(); ++E) {
+      if(E->first == v)
+         adjV.insert(E->second);
+   }
+   return adjV;
 }
