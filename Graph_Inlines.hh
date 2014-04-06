@@ -33,6 +33,16 @@ Graph::rank(std::string v) const {
    return adjacent(v).size();
 }
 
+inline bool
+Graph::isRegular() const {
+   return minRank() == maxRank() ? true : false;
+}
+
+inline bool
+Graph::isOriented() const {
+   return direct;
+}
+
 inline std::ostream&
 operator<<(std::ostream& os, const Graph& g) {
    g.print(os);

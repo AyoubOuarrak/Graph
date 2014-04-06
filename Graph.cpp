@@ -6,6 +6,7 @@
 #include <ctime>
 #include "Graph.hh"
 #include "Utility.hh"
+#include "Graph_Algorithm.hh"
 
 using namespace GraphLib;
 
@@ -170,4 +171,42 @@ std::set<std::string> Graph::adjacent(std::string v) const {
          adjV.insert(E->second);
    }
    return adjV;
+}
+
+unsigned Graph::minRank() const {
+   unsigned min;
+   std::vector<std::string>::const_iterator v = _vertex.begin();
+   min = rank(*v);
+   for(v = _vertex.begin(); v != _vertex.end(); ++v) {
+      if(v + 1 != _vertex.end())
+         if(rank(*(v + 1)) < min)
+            min = rank(*(v + 1));
+   }
+   return min;
+}
+
+unsigned Graph::maxRank() const {
+   unsigned max;
+   std::vector<std::string>::const_iterator v = _vertex.begin();
+   max = rank(*v);
+   for(v = _vertex.begin(); v != _vertex.end(); ++v) {
+      if(v + 1 != _vertex.end())
+         if(rank(*(v + 1)) > max)
+            max = rank(*(v + 1));
+   }
+   return max;
+}
+
+bool Graph::hasNegativeWeigth() const {
+   std::map<link, double>::const_iterator w;  //eg. {<v1,u1> = 1, <v2,u2> = 1 ,...}
+   for(w = _edgeWeight.begin(); w != _edgeWeight.end(); ++w) {
+      if(w->second < 0)
+         return true;
+   }
+   return false;
+}
+
+bool Graph::isConnected() const {
+   GraphAlgorithm::DepthFirstSearch dfs(*this, _vertex[0]);
+   return dfs.vertexConnected() == _vertex.size();
 }

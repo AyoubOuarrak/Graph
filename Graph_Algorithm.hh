@@ -1,6 +1,10 @@
 /*
  *  Author : Ouarrak Ayoub
  *  Date   : ~/04/2014
+ *
+ *  This library of graph algorithms is based on:
+ *     Algorithms, 4th Edition by Robert Sedgewick and Kevin Wayne.
+ *     http://algs4.cs.princeton.edu/code/
 */
 
 #ifndef GUARD_GRAPH_ALGORITHM_HH
@@ -57,7 +61,9 @@ public:
       return _count;
    }
 
-}; // class DFS
+}; // class DepthFirstSearch
+
+
 
 } // namespace GraphAlgorithm
 

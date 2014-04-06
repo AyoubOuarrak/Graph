@@ -35,23 +35,20 @@ public:
    void   addEdge(std::string fromNode, std::string toNode, double cost = 1);
    void   setWeight(std::string fromNode, std::string toNode, double cost);
    bool   hasEdge(std::string fromNode, std::string toNode) const;
+   bool   hasNegativeWeigth() const;
+   bool   isConnected() const;
    double weight(std::string fromNode, std::string toNode) const;  // return weight of the edge
 
    unsigned minRank() const;
    unsigned maxRank() const;
    std::set<std::string> adjacent(std::string) const; // return a vector of nodes adjacent to v
 
-   /*
-   bool isTree() const;
-   bool isDag() const;
-   bool isOriented() const;
-   bool isConnected() const;
-   bool hasNegativeWeigth();
-   */
+   inline bool isOriented() const;
+   inline bool isRegular() const; // minRank = maxRank = k -> regularity of graph is k
+
    inline unsigned vertex() const; // return the number of vertex
    inline unsigned edge() const; // return the number of edge
    inline unsigned rank(std::string v) const; // n° of adjacent vertex of v
-   inline unsigned regularity() const; // minRank = maxRank = k -> regularity of graph is k
    void print(std::ostream&) const;
 
 private:
