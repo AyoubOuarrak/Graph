@@ -1,14 +1,22 @@
+#include "Graph_Algorithm.hh"
 #include <stdexcept>
 #include "Graph.hh"
 #include <iostream>
+#include <ctime>
 
 using namespace GraphLib;
+using namespace GraphAlgorithm;
 
 int main() {
+   std::cout << "***************************************" << std::endl
+             << "         TESTING GRAPH CLASS           " << std::endl
+             << "***************************************" << std::endl;
    // random Graph with(max) 10 nodes
    std::cout << "***** test 1: generate random graph" << std::endl;
    Graph G1 = Graph::generateRandomGraph(10);
    std::cout << G1 << std::endl;
+   std::cout << "**** test 1.1 rank of a vertex" << std::endl;
+   std::cout << G1.rank("3") << std::endl;
 
    try {
       // circular Graph with nodes{a,b,c,d}
@@ -54,4 +62,27 @@ int main() {
    Graph G5(G1);
    std::cout << G5 << std::endl;
 
+
+   std::cout << "**** test 6: vertex adjacent to h (in G5)" << std::endl;
+   std::set<std::string> adj = G4.adjacent("h");
+   std::set<std::string>::const_iterator adjIt;
+   for(adjIt = adj.begin(); adjIt != adj.end(); ++adjIt) {
+      std::cout << *adjIt << " ";
+   }
+   std::cout << std::endl;
+
+
+   std::cout << "***************************************" << std::endl
+             << "       TESTING GRAPH ALGORITHM         " << std::endl
+             << "***************************************" << std::endl;
+
+   std::cout << "**** 7: dfs ( g4, h)" << std::endl;
+   DepthFirstSearch dfs(G4, "h");
+
+   std::map<std::string, bool>::iterator v;
+   for(v = dfs.begin(); v != dfs.end(); ++v) {
+      if(dfs.marked(v->first))
+         std::cout << v->first <<  " ";
+   }
+   std::cout << std::endl;
 }

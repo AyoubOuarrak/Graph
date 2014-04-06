@@ -28,6 +28,11 @@ Graph::edge() const {
    return _edge.size();
 }
 
+inline unsigned
+Graph::rank(std::string v) const {
+   return adjacent(v).size();
+}
+
 inline std::ostream&
 operator<<(std::ostream& os, const Graph& g) {
    g.print(os);

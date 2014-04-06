@@ -143,8 +143,7 @@ double Graph::weight(std::string fromNode, std::string toNode) const {
 
 void Graph::print(std::ostream& os) const {
    std::vector<std::string>::const_iterator V;
-   std::vector<link>::const_iterator E;
-
+   std::vector<link>::const_iterator E = _edge.begin();
    os << "Vertex : { ";
    for(V = _vertex.begin(); V != _vertex.end(); ++V) {
       os << *V;

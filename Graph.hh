@@ -37,6 +37,8 @@ public:
    bool   hasEdge(std::string fromNode, std::string toNode) const;
    double weight(std::string fromNode, std::string toNode) const;  // return weight of the edge
 
+   unsigned minRank() const;
+   unsigned maxRank() const;
    std::set<std::string> adjacent(std::string) const; // return a vector of nodes adjacent to v
 
    /*
@@ -48,6 +50,8 @@ public:
    */
    inline unsigned vertex() const; // return the number of vertex
    inline unsigned edge() const; // return the number of edge
+   inline unsigned rank(std::string v) const; // n° of adjacent vertex of v
+   inline unsigned regularity() const; // minRank = maxRank = k -> regularity of graph is k
    void print(std::ostream&) const;
 
 private:
