@@ -12,7 +12,7 @@ void testRandomGraphGenerator() {
    std::cout << "***** test 1: generate random graph" << std::endl;
    Graph G1 = Graph::generateRandomGraph(10);
    std::cout << G1 << std::endl;
-   std::cout << "**** test 1.1 rank of a vertex" << std::endl;
+   std::cout << "**** test 1.1 rank of a Node" << std::endl;
    std::cout << G1.rank("3") << std::endl;
 }
 
@@ -40,10 +40,10 @@ void testUndirectedGraph() {
    std::cout << "***** test 4: undirected graph" << std::endl;
    // undirected Graph
    Graph G4(Graph::undirected);
-   std::cout << "***** test 4.1:  addVertex" << std::endl;
-   G4.addVertex("h");
-   G4.addVertex("y");
-   G4.addVertex("j");
+   std::cout << "***** test 4.1:  addNode" << std::endl;
+   G4.addNode("h");
+   G4.addNode("y");
+   G4.addNode("j");
 
    std::cout << "***** test 4.2: addEdge" << std::endl;
    // if the nodes does not exist, throw: out of range exception
@@ -58,8 +58,8 @@ void testUndirectedGraph() {
    std::cout << G4 << std::endl;
 }
 
-void testVertexAdjacent() {
-   std::cout << "**** test 6: vertex adjacent to 2 (in G5)" << std::endl;
+void testNodeAdjacent() {
+   std::cout << "**** test 6: Node adjacent to 2 (in G5)" << std::endl;
    Graph G5 = Graph::generateRandomGraph(6);
    std::cout << G5 << std::endl;
 
@@ -95,8 +95,28 @@ void testRemoveEdge() {
       std::cout << "G8 is not connected" << std::endl;
 }
 
+void testRemoveNode() {
+   std::cout << "**** test 9: remove Node" << std::endl;
+   Graph G9;
+   G9.addNode("v1");
+   G9.addNode("v2");
+   G9.addNode("v3");
+   G9.addNode("v4");
+   G9.addNode("v5");
+   G9.addEdge("v1", "v2");
+   G9.addEdge("v1", "v3");
+   G9.addEdge("v2", "v4");
+   G9.addEdge("v4", "v5");
+   G9.addEdge("v5", "v1");
+
+   std::cout << G9 << std::endl;
+   std::cout << "remove v5" << std::endl;
+   G9.removeNode("v5");
+   std::cout << G9 << std::endl;
+}
+
 void testDfs() {
-   std::cout << "**** : dfs ( G7, 3)" << std::endl;
+   std::cout << "**** test 10: dfs ( G7, 3)" << std::endl;
    Graph G7 = Graph::generateRandomGraph(7);
    std::cout << G7 << std::endl;
 
@@ -109,8 +129,29 @@ void testDfs() {
    std::cout << std::endl;
 }
 
+void testDraw() {
+   std::cout << "**** test 11: draw graph using dracula javascript library" << std::endl;
+   Graph G11;
+   G11.addNode("v1");
+   G11.addNode("v2");
+   G11.addNode("v3");
+   G11.addNode("v4");
 
+   G11.addEdge("v1", "v3", 5);
+   G11.addEdge("v2", "v4", 3);
+   G11.addEdge("v1", "v2", 6);
+   G11.addEdge("v3", "v2", 10);
+   G11.addEdge("v2", "v4", 1);
 
+   std::cout << G11 << std::endl;
+   G11.draw();
+}
+
+void testDraw2() {
+   std::cout << "**** test 12: draw large graph using dracula" << std::endl;
+   Graph G12("1-30", Graph::random);
+   G12.draw();
+}
 int main() {
    std::cout << "***************************************" << std::endl
              << "         TESTING GRAPH CLASS           " << std::endl
@@ -119,9 +160,10 @@ int main() {
    testRandomGraphGenerator();
    testGraphInterval();
    testUndirectedGraph();
-   testVertexAdjacent();
+   testNodeAdjacent();
    testGraphConnection();
    testRemoveEdge();
+   testDraw2();
 
    std::cout << "***************************************" << std::endl
              << "       TESTING GRAPH ALGORITHM         " << std::endl

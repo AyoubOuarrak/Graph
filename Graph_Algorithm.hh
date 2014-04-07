@@ -57,7 +57,7 @@ public:
       return _marked.end();
    }
 
-   unsigned vertexConnected() {
+   unsigned nodeConnected() {
       return _count;
    }
 

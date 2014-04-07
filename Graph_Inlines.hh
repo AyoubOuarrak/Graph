@@ -4,13 +4,13 @@
 typedef std::pair<std::string, std::string> link;  // eg. <v. u>
 
 inline unsigned
-Graph::vertex() const {
-   return _vertex.size();
+Graph::nodes() const {
+   return _node.size();
 }
 
 inline std::vector<std::string>
-Graph::_Vertex() const {
-   return _vertex;
+Graph::_Node() const {
+   return _node;
 }
 
 inline std::vector<link>
@@ -24,7 +24,7 @@ Graph::_EdgeWeight() const {
 }
 
 inline unsigned
-Graph::edge() const {
+Graph::edges() const {
    return _edge.size();
 }
 

@@ -3,6 +3,7 @@
 #include <iostream>
 #include <iterator>
 #include <cstdlib>
+#include <fstream>
 #include <ctime>
 #include "Graph.hh"
 #include "Utility.hh"
@@ -11,8 +12,8 @@
 using namespace GraphLib;
 
 typedef std::pair<std::string, std::string> link;
-int Graph::random = 0;
-int Graph::circular = 1;
+int  Graph::random = 0;
+int  Graph::circular = 1;
 bool Graph::directed = true;
 bool Graph::undirected = false;
 
@@ -21,7 +22,7 @@ Graph::Graph(bool graphType) {
 }
 
 Graph::Graph(const Graph& G) {
-   _vertex = G._Vertex();
+   _node = G._Node();
    _edge = G._Edge();
    _edgeWeight = G._EdgeWeight();
 }
@@ -33,13 +34,13 @@ Graph::Graph(std::string regex, int edgeType, bool graphType) {
          std::vector<char> tmp = utility::regexChar(regex);
          std::vector<char>::const_iterator it;
          for(it = tmp.begin(); it != tmp.end(); ++it)
-            _vertex.push_back(utility::to_string(*it));
+            _node.push_back(utility::to_string(*it));
       }
       else if(regex.length() > 3) { //10-17,  12-102 ...
          std::vector<int> tmp = utility::regexInt(regex);
          std::vector<int>::const_iterator it;
          for(it = tmp.begin(); it != tmp.end(); ++it)
-            _vertex.push_back(utility::to_string(*it));
+            _node.push_back(utility::to_string(*it));
       }
    }
    else throw std::invalid_argument("invalid interval");
@@ -51,12 +52,12 @@ void Graph::generateEdge(int edgeType) {
    switch(edgeType) {
       case 0: { // random
          srand(time(NULL));
-         for(unsigned i = 0; i < _vertex.size(); ++i) {
-            int randVertex1 = rand() % _vertex.size();
-            int randVertex2 = rand() % _vertex.size();
-            if(randVertex1 != randVertex2)
+         for(unsigned i = 0; i < nodes(); ++i) {
+            int randNode1 = rand() % nodes();
+            int randNode2 = rand() % nodes();
+            if(randNode1 != randNode2)
                try {
-                  addEdge(_vertex.at(randVertex1), _vertex.at(randVertex2));
+                  addEdge(_node.at(randNode1), _node.at(randNode2));
                }
                catch(std::exception e) {
                   std::cout << e.what();
@@ -65,13 +66,13 @@ void Graph::generateEdge(int edgeType) {
       }
       case 1: { // circular
          std::vector<std::string>::const_iterator it;
-         std::string initialVertex = _vertex.at(0);
-         for(it = _vertex.begin(); it != _vertex.end(); ++it) {
+         std::string initialNode = _node.at(0);
+         for(it = _node.begin(); it != _node.end(); ++it) {
             try {
-               if(it + 1 != _vertex.end())
+               if(it + 1 != _node.end())
                   addEdge(*it, *(it + 1));
                else
-                  addEdge(*it, initialVertex);
+                  addEdge(*it, initialNode);
             }
             catch(std::exception e) {
                std::cout << e.what();
@@ -81,10 +82,10 @@ void Graph::generateEdge(int edgeType) {
    }
 }
 
-Graph Graph::generateRandomGraph(int maxVertex, bool graphType) {
+Graph Graph::generateRandomGraph(int maxNode, bool graphType) {
    srand(time(NULL));
-   int fromInt = rand() % maxVertex;
-   int toInt = rand() % maxVertex;
+   int fromInt = rand() % maxNode;
+   int toInt = rand() % maxNode;
    std::string ivt = std::min(utility::to_string(fromInt), utility::to_string(toInt)) +
                      "-" +
                      std::max(utility::to_string(toInt), utility::to_string(fromInt));
@@ -93,13 +94,30 @@ Graph Graph::generateRandomGraph(int maxVertex, bool graphType) {
    return G;
 }
 
-void Graph::addVertex(std::string node) {
-      _vertex.push_back(node);
+void Graph::addNode(std::string node) {
+      _node.push_back(node);
+}
+
+void Graph::removeNode(std::string node) {
+   std::vector<std::string>::iterator v;
+   v = std::find(_node.begin(), _node.end(), node);
+   if(v != _node.end()) {
+      _node.erase(v);
+      // remove the edge connected to the node
+      std::vector<link>::const_iterator e;
+      for(e = _edge.begin(); e != _edge.end(); ++e) {
+         if(e->first == node)
+            removeEdge(e->first, e->second);
+         if(e->second == node)
+            removeEdge(e->second, e->first);
+      }
+   }
+   else throw std::out_of_range("invalid_argument");
 }
 
 void Graph::addEdge(std::string fromNode, std::string toNode, double cost) {
-   if(std::find(_vertex.begin(), _vertex.end(), fromNode) != _vertex.end() &&
-      std::find(_vertex.begin(), _vertex.end(), toNode)   != _vertex.end()) {
+   if(std::find(_node.begin(), _node.end(), fromNode) != _node.end() &&
+      std::find(_node.begin(), _node.end(), toNode)   != _node.end()) {
 
       if(direct) {
          _edge.push_back(std::make_pair(fromNode, toNode));
@@ -116,8 +134,8 @@ void Graph::addEdge(std::string fromNode, std::string toNode, double cost) {
 }
 
 void Graph::removeEdge(std::string fromNode, std::string toNode) {
-   if(std::find(_vertex.begin(), _vertex.end(), fromNode) != _vertex.end() &&
-      std::find(_vertex.begin(), _vertex.end(), toNode)   != _vertex.end()) {
+   if(std::find(_node.begin(), _node.end(), fromNode) != _node.end() &&
+      std::find(_node.begin(), _node.end(), toNode)   != _node.end()) {
 
       if(direct) {
          _edge.erase(std::find(_edge.begin(),
@@ -140,8 +158,8 @@ void Graph::removeEdge(std::string fromNode, std::string toNode) {
 }
 
 void Graph::setWeight(std::string fromNode, std::string toNode, double cost) {
-   if(std::find(_vertex.begin(), _vertex.end(), fromNode) != _vertex.end() &&
-      std::find(_vertex.begin(), _vertex.end(), toNode)   != _vertex.end()) {
+   if(std::find(_node.begin(), _node.end(), fromNode) != _node.end() &&
+      std::find(_node.begin(), _node.end(), toNode)   != _node.end()) {
 
       if(direct) {
          _edgeWeight[std::make_pair(fromNode, toNode)] = cost;
@@ -169,10 +187,10 @@ double Graph::weight(std::string fromNode, std::string toNode) const {
 void Graph::print(std::ostream& os) const {
    std::vector<std::string>::const_iterator V;
    std::vector<link>::const_iterator E = _edge.begin();
-   os << "Vertex : { ";
-   for(V = _vertex.begin(); V != _vertex.end(); ++V) {
+   os << "Node : { ";
+   for(V = _node.begin(); V != _node.end(); ++V) {
       os << *V;
-      if(V + 1 != _vertex.end())
+      if(V + 1 != _node.end())
          os << " , ";
    }
 
@@ -199,10 +217,10 @@ std::set<std::string> Graph::adjacent(std::string v) const {
 
 unsigned Graph::minRank() const {
    unsigned min;
-   std::vector<std::string>::const_iterator v = _vertex.begin();
+   std::vector<std::string>::const_iterator v = _node.begin();
    min = rank(*v);
-   for(v = _vertex.begin(); v != _vertex.end(); ++v) {
-      if(v + 1 != _vertex.end())
+   for(v = _node.begin(); v != _node.end(); ++v) {
+      if(v + 1 != _node.end())
          if(rank(*(v + 1)) < min)
             min = rank(*(v + 1));
    }
@@ -211,10 +229,10 @@ unsigned Graph::minRank() const {
 
 unsigned Graph::maxRank() const {
    unsigned max;
-   std::vector<std::string>::const_iterator v = _vertex.begin();
+   std::vector<std::string>::const_iterator v = _node.begin();
    max = rank(*v);
-   for(v = _vertex.begin(); v != _vertex.end(); ++v) {
-      if(v + 1 != _vertex.end())
+   for(v = _node.begin(); v != _node.end(); ++v) {
+      if(v + 1 != _node.end())
          if(rank(*(v + 1)) > max)
             max = rank(*(v + 1));
    }
@@ -231,6 +249,73 @@ bool Graph::hasNegativeWeigth() const {
 }
 
 bool Graph::isConnected() const {
-   GraphAlgorithm::DepthFirstSearch dfs(*this, _vertex[0]);
-   return dfs.vertexConnected() == _vertex.size();
+   GraphAlgorithm::DepthFirstSearch dfs(*this, _node[0]);
+   return dfs.nodeConnected() == _node.size();
+}
+
+void Graph::generateHtml() {
+   std::ofstream f_html("G.html");
+   system("mkdir html");
+   f_html << "<html>" << std::endl
+          << "   <head>" << std::endl
+          << "      <script type=\"text/javascript\" src=\"../js/raphael-min.js\"></script>" << std::endl
+          << "      <script type=\"text/javascript\" src=\"../js/dracula_graffle.js\"></script>" << std::endl
+          << "      <script type=\"text/javascript\" src=\"../js/dracula_algorithms.js\"></script>" << std::endl
+          << "      <script type=\"text/javascript\" src=\"../js/dracula_graph.js\"></script>" << std::endl
+          << "      <script type=\"text/javascript\" src=\"../js/jquery-1.4.2.min.js\"></script>" << std::endl
+          << "      <script type=\"text/javascript\" src=\"G.js\"></script>" << std::endl
+          << "      <style type=\"text/css\">" << std::endl
+          << "         body {" << std::endl
+          << "            overflow: hidden;" << std::endl
+          << "         }" << std::endl
+          << "      </style>" << std::endl
+          << "   </head>" << std::endl
+          << "   <body>" << std::endl
+          << "      <div id = \"canvas\"></div>" << std::endl
+          << "   </body>" << std::endl
+          << "</html>" << std::endl;
+   f_html.close();
+   system("cp G.html html/");
+   system("rm G.html");
+}
+
+void Graph::generateJavascript() {
+   std::ofstream f_js("G.js");
+   f_js << "$(document).ready(function() {" << std::endl
+        << "var width = $(document).width();" << std::endl   // dimension of the div
+        << "var height = $(document).height();" << std::endl // dimension of the div
+        << "var g = new Graph();" << std::endl;
+
+   if(direct)
+      f_js << "g.edgeFactory.template.style.directed = true;" << std::endl;
+   else
+      f_js << "g.edgeFactory.template.style.directed = false;" << std::endl;
+
+   std::vector<link>::const_iterator v;
+   for(v = _edge.begin(); v != _edge.end(); ++v) {
+      // insert the weight into the javascript code
+      double w = weight(v->first, v->second);
+      std::string colorEdge = "#78af64";
+      std::string st = ",{label : \"" + utility::to_string(w) + "\",\"" +
+                       "label-style\" : {\"font-size\": 20}," +
+                       "fill : \""+ colorEdge + "\"," +
+                       "stroke: \"" + colorEdge + "\"}";
+      f_js << "g.addEdge(\"" << v->first << "\", \"" << v->second <<"\"" << st << ");" << std::endl;
+   }
+
+   f_js << "var layouter = new Graph.Layout.Spring(g);" << std::endl
+        << "layouter.layout();" << std::endl
+        << "var renderer = new Graph.Renderer.Raphael('canvas', g, width, height);" << std::endl
+        << "renderer.draw();" << std::endl
+        << "});" << std::endl;
+
+   f_js.close();
+   system("cp G.js html/");
+   system("rm G.js");
+}
+
+void Graph::draw() {
+   generateHtml();
+   generateJavascript();
+   system("xdg-open html/G.html &"); // execute default browser
 }
