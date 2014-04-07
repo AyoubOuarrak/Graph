@@ -30,7 +30,7 @@ public:
    Graph(const Graph&); //copy ctr
    ~Graph() = default;
 
-   void   generateGraph(int);  // generate edge to connect the Graph, using random/circular method.
+   void   generateEdge(int);  // generate edge to connect the Graph, using random/circular method.
    void   addVertex(std::string node);
    void   addEdge(std::string fromNode, std::string toNode, double cost = 1);
    void   setWeight(std::string fromNode, std::string toNode, double cost);

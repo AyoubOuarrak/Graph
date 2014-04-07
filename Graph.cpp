@@ -44,10 +44,10 @@ Graph::Graph(std::string regex, int edgeType, bool graphType) {
    }
    else throw std::invalid_argument("invalid interval");
 
-   generateGraph(edgeType);
+   generateEdge(edgeType);
 }
 
-void Graph::generateGraph(int edgeType) {
+void Graph::generateEdge(int edgeType) {
    switch(edgeType) {
       case 0: { // random
          srand(time(NULL));
@@ -198,7 +198,7 @@ unsigned Graph::maxRank() const {
 }
 
 bool Graph::hasNegativeWeigth() const {
-   std::map<link, double>::const_iterator w;  //eg. {<v1,u1> = 1, <v2,u2> = 1 ,...}
+   std::map<link, double>::const_iterator w;
    for(w = _edgeWeight.begin(); w != _edgeWeight.end(); ++w) {
       if(w->second < 0)
          return true;
