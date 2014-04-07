@@ -115,6 +115,30 @@ void Graph::addEdge(std::string fromNode, std::string toNode, double cost) {
    else throw std::out_of_range("invalid edge");
 }
 
+void Graph::removeEdge(std::string fromNode, std::string toNode) {
+   if(std::find(_vertex.begin(), _vertex.end(), fromNode) != _vertex.end() &&
+      std::find(_vertex.begin(), _vertex.end(), toNode)   != _vertex.end()) {
+
+      if(direct) {
+         _edge.erase(std::find(_edge.begin(),
+                               _edge.end(),
+                               std::make_pair(fromNode, toNode)));
+         _edgeWeight.erase(std::make_pair(fromNode, toNode));
+      }
+      else { //undirected graph
+         _edge.erase(std::find(_edge.begin(),
+                               _edge.end(),
+                               std::make_pair(fromNode, toNode)));
+         _edge.erase(std::find(_edge.begin(),
+                               _edge.end(),
+                               std::make_pair(toNode, fromNode)));
+         _edgeWeight.erase(std::make_pair(fromNode, toNode));
+         _edgeWeight.erase(std::make_pair(toNode, fromNode));
+      }
+   }
+   else throw std::out_of_range("invalid edge");
+}
+
 void Graph::setWeight(std::string fromNode, std::string toNode, double cost) {
    if(std::find(_vertex.begin(), _vertex.end(), fromNode) != _vertex.end() &&
       std::find(_vertex.begin(), _vertex.end(), toNode)   != _vertex.end()) {

@@ -82,6 +82,19 @@ void testGraphConnection() {
       std::cout << "false" << std::endl;
 }
 
+void testRemoveEdge() {
+   std::cout << "**** test 8: remove edge" << std::endl;
+   Graph G8("a-f", Graph::circular);
+   std::cout << G8 << std::endl;
+   G8.removeEdge("b", "c");
+   G8.removeEdge("d", "e");
+   std::cout << G8 << std::endl;
+   if(G8.isConnected())
+      std::cout << "G8 is connected" << std::endl;
+   else
+      std::cout << "G8 is not connected" << std::endl;
+}
+
 void testDfs() {
    std::cout << "**** : dfs ( G7, 3)" << std::endl;
    Graph G7 = Graph::generateRandomGraph(7);
@@ -96,6 +109,8 @@ void testDfs() {
    std::cout << std::endl;
 }
 
+
+
 int main() {
    std::cout << "***************************************" << std::endl
              << "         TESTING GRAPH CLASS           " << std::endl
@@ -106,6 +121,7 @@ int main() {
    testUndirectedGraph();
    testVertexAdjacent();
    testGraphConnection();
+   testRemoveEdge();
 
    std::cout << "***************************************" << std::endl
              << "       TESTING GRAPH ALGORITHM         " << std::endl

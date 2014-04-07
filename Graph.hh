@@ -33,6 +33,7 @@ public:
    void   generateEdge(int);  // generate edge to connect the Graph, using random/circular method.
    void   addVertex(std::string node);
    void   addEdge(std::string fromNode, std::string toNode, double cost = 1);
+   void   removeEdge(std::string from, std::string toNode);
    void   setWeight(std::string fromNode, std::string toNode, double cost);
    bool   hasEdge(std::string fromNode, std::string toNode) const;
    bool   hasNegativeWeigth() const;
