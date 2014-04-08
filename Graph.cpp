@@ -253,7 +253,7 @@ bool Graph::isConnected() const {
    return dfs.nodeConnected() == _node.size();
 }
 
-void Graph::generateHtml() {
+void Graph::generateHtmlPage() {
    std::ofstream f_html("G.html");
    system("mkdir html");
    f_html << "<html>" << std::endl
@@ -278,8 +278,8 @@ void Graph::generateHtml() {
    system("cp G.html html/");
    system("rm G.html");
 }
-
-void Graph::generateJavascript() {
+//I apologize for the ugliness of this function
+void Graph::generateJavascriptPage() {
    std::ofstream f_js("G.js");
    f_js << "$(document).ready(function() {" << std::endl
         << "var width = $(document).width();" << std::endl   // dimension of the div
@@ -291,18 +291,34 @@ void Graph::generateJavascript() {
    else
       f_js << "g.edgeFactory.template.style.directed = false;" << std::endl;
 
-   std::vector<link>::const_iterator v;
-   for(v = _edge.begin(); v != _edge.end(); ++v) {
-      // insert the weight into the javascript code
-      double w = weight(v->first, v->second);
-      std::string colorEdge = "#78af64";
-      std::string st = ",{label : \"" + utility::to_string(w) + "\",\"" +
-                       "label-style\" : {\"font-size\": 20}," +
-                       "fill : \""+ colorEdge + "\"," +
-                       "stroke: \"" + colorEdge + "\"}";
-      f_js << "g.addEdge(\"" << v->first << "\", \"" << v->second <<"\"" << st << ");" << std::endl;
+   //customize the nodes
+   f_js << "var render = function(r, n) { " << std::endl
+        << "var set = r.set().push(" << std::endl
+        << "r.circle(n.point[0], n.point[1]-13, 60, 44).attr({\"fill\": \"#8b8d8b\", r : \"11px\""
+        << ",\"stroke-width\" : \"0.4px\"})).push(" << std::endl
+        << "r.text(n.point[0], n.point[1] + 5, (n.label || n.id)));" << std::endl
+        << "return set; }" << std::endl;
+
+   //generate the nodes
+   std::vector<std::string>::const_iterator v;
+   for(v = _node.begin(); v != _node.end(); ++v) {
+      f_js << "g.addNode(\"" << *v << "\", {render:render});" << std::endl;
    }
 
+   //generate the edges
+   std::vector<link>::const_iterator e;
+   for(e = _edge.begin(); e != _edge.end(); ++e) {
+      // insert the weight into the javascript code
+      double w = weight(e->first, e->second);
+
+      std::string st = ",{label : \"" + utility::to_string(w) + "\",\"" +
+                       "label-style\" : {\"font-size\": 15}," +
+                       "fill : \"#bebebe\"," +
+                       "stroke: \"#646464\"}";
+      f_js << "g.addEdge(\"" << e->first << "\", \"" << e->second <<"\"" << st << ");" << std::endl;
+   }
+
+   //draw using the dracula library
    f_js << "var layouter = new Graph.Layout.Spring(g);" << std::endl
         << "layouter.layout();" << std::endl
         << "var renderer = new Graph.Renderer.Raphael('canvas', g, width, height);" << std::endl
@@ -315,7 +331,7 @@ void Graph::generateJavascript() {
 }
 
 void Graph::draw() {
-   generateHtml();
-   generateJavascript();
+   generateHtmlPage();
+   generateJavascriptPage();
    system("xdg-open html/G.html &"); // execute default browser
 }

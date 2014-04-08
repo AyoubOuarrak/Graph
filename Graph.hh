@@ -68,8 +68,8 @@ private:
    inline std::map<link, double>   _EdgeWeight() const;  //return map edgeWeight
 
    // function to draw the graph using javascript and html
-   void generateHtml();
-   void generateJavascript();
+   void generateHtmlPage();
+   void generateJavascriptPage();
 };
 
 // operator << overloaded

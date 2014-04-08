@@ -149,7 +149,7 @@ void testDraw() {
 
 void testDraw2() {
    std::cout << "**** test 12: draw large graph using dracula" << std::endl;
-   Graph G12("1-30", Graph::random);
+   Graph G12("1-20", Graph::random);
    G12.draw();
 }
 int main() {
