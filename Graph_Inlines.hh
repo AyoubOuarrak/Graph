@@ -1,6 +1,5 @@
 #ifndef GRAPH_INLINES_HH
 #define GRAPH_INLINES_HH 1
-
 typedef std::pair<std::string, std::string> link;  // eg. <v. u>
 
 inline unsigned
@@ -43,6 +42,17 @@ Graph::isOriented() const {
    return direct;
 }
 
+inline bool
+Graph::exist(std::string node) const {
+   return std::find(_node.begin(), _node.end(), node) != _node.end();
+}
+
+inline bool
+Graph::hasEdge(std::string fromNode, std::string toNode) const {
+   return std::find(_edge.begin(),
+                    _edge.end(),
+                    std::make_pair(fromNode, toNode)) != _edge.end();
+}
 inline std::ostream&
 operator<<(std::ostream& os, const Graph& g) {
    g.print(os);

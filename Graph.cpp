@@ -1,5 +1,4 @@
 #include <algorithm>
-#include <stdexcept>
 #include <iostream>
 #include <iterator>
 #include <cstdlib>
@@ -43,8 +42,6 @@ Graph::Graph(std::string regex, int edgeType, bool graphType) {
             _node.push_back(utility::to_string(*it));
       }
    }
-   else throw std::invalid_argument("invalid interval");
-
    generateEdge(edgeType);
 }
 
@@ -112,31 +109,29 @@ void Graph::removeNode(std::string node) {
             removeEdge(e->second, e->first);
       }
    }
-   else throw std::out_of_range("invalid_argument");
 }
 
 void Graph::addEdge(std::string fromNode, std::string toNode, double cost) {
-   if(std::find(_node.begin(), _node.end(), fromNode) != _node.end() &&
-      std::find(_node.begin(), _node.end(), toNode)   != _node.end()) {
+   // if the nodes do not exist, create them
+   if(!exist(fromNode))
+      addNode(fromNode);
+   if(!exist(toNode))
+      addNode(toNode);
 
-      if(direct) {
-         _edge.push_back(std::make_pair(fromNode, toNode));
-         _edgeWeight[std::make_pair(fromNode, toNode)] = cost;
-      }
-      else { //undirected graph
-         _edge.push_back(std::make_pair(fromNode, toNode));
-         _edge.push_back(std::make_pair(toNode, fromNode));
-         _edgeWeight[std::make_pair(fromNode, toNode)] = cost;
-         _edgeWeight[std::make_pair(toNode, fromNode)] = cost;
-      }
+   if(direct) {
+      _edge.push_back(std::make_pair(fromNode, toNode));
+      _edgeWeight[std::make_pair(fromNode, toNode)] = cost;
    }
-   else throw std::out_of_range("invalid edge");
+   else { //undirected graph
+      _edge.push_back(std::make_pair(fromNode, toNode));
+      _edge.push_back(std::make_pair(toNode, fromNode));
+      _edgeWeight[std::make_pair(fromNode, toNode)] = cost;
+      _edgeWeight[std::make_pair(toNode, fromNode)] = cost;
+   }
 }
 
 void Graph::removeEdge(std::string fromNode, std::string toNode) {
-   if(std::find(_node.begin(), _node.end(), fromNode) != _node.end() &&
-      std::find(_node.begin(), _node.end(), toNode)   != _node.end()) {
-
+   if(exist(fromNode) && exist(toNode)) {
       if(direct) {
          _edge.erase(std::find(_edge.begin(),
                                _edge.end(),
@@ -154,13 +149,10 @@ void Graph::removeEdge(std::string fromNode, std::string toNode) {
          _edgeWeight.erase(std::make_pair(toNode, fromNode));
       }
    }
-   else throw std::out_of_range("invalid edge");
 }
 
 void Graph::setWeight(std::string fromNode, std::string toNode, double cost) {
-   if(std::find(_node.begin(), _node.end(), fromNode) != _node.end() &&
-      std::find(_node.begin(), _node.end(), toNode)   != _node.end()) {
-
+   if(exist(fromNode) && exist(toNode)) {
       if(direct) {
          _edgeWeight[std::make_pair(fromNode, toNode)] = cost;
       }
@@ -169,13 +161,6 @@ void Graph::setWeight(std::string fromNode, std::string toNode, double cost) {
          _edgeWeight[std::make_pair(toNode, fromNode)] = cost;
       }
    }
-   else throw std::out_of_range("invalid edge");
-}
-
-bool Graph::hasEdge(std::string fromNode, std::string toNode) const {
-   return std::find(_edge.begin(),
-                    _edge.end(),
-                    std::make_pair(fromNode, toNode)) != _edge.end();
 }
 
 double Graph::weight(std::string fromNode, std::string toNode) const {

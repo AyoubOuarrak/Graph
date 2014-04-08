@@ -17,23 +17,19 @@ void testRandomGraphGenerator() {
 }
 
 void testGraphInterval() {
-   try {
-      // circular Graph with nodes{a,b,c,d}
-      std::cout << "***** test 2: interval:<a-d> using Graph::circular " << std::endl;
-      Graph G2("a-d", Graph::circular);
+   // circular Graph with nodes{a,b,c,d}
+   std::cout << "***** test 2: interval:<a-d> using Graph::circular " << std::endl;
+   Graph G2("a-d", Graph::circular);
 
-      std::cout << "***** test 2.1: setWeight" << std::endl;
-      G2.setWeight("c", "d", 6);  //manual setting of weight in the edge
-      std::cout << G2 << std::endl;
+   std::cout << "***** test 2.1: setWeight" << std::endl;
+   G2.setWeight("c", "d", 6);  //manual setting of weight in the edge
+   std::cout << G2 << std::endl;
 
-      // nodes{1,2,3,4} with random edges to connect the nodes
-      std::cout << "***** test 3: interval:<1-4> using Graph::random   " << std::endl;
-      Graph G3("1-4", Graph::random);
-      std::cout << G3 << std::endl;
-   }
-   catch(std::exception e) {
-      std::cerr << e.what(); // invalid interval
-   }
+   // nodes{1,2,3,4} with random edges to connect the nodes
+   std::cout << "***** test 3: interval:<1-4> using Graph::random   " << std::endl;
+   Graph G3("1-4", Graph::random);
+   std::cout << G3 << std::endl;
+
 }
 
 void testUndirectedGraph() {
@@ -47,14 +43,11 @@ void testUndirectedGraph() {
 
    std::cout << "***** test 4.2: addEdge" << std::endl;
    // if the nodes does not exist, throw: out of range exception
-   try {
-      G4.addEdge("h", "j");    // default weight is 1
-      G4.addEdge("j", "y", 5); // 5: weight of edge <j, y>
-      G4.addEdge("y", "h");
-   }
-   catch(std::exception e) {
-      std::cerr << e.what();
-   }
+
+   G4.addEdge("h", "j");    // default weight is 1
+   G4.addEdge("j", "y", 5); // 5: weight of edge <j, y>
+   G4.addEdge("y", "h");
+
    std::cout << G4 << std::endl;
 }
 
@@ -141,7 +134,6 @@ void testDraw() {
    G11.addEdge("v2", "v4", 3);
    G11.addEdge("v1", "v2", 6);
    G11.addEdge("v3", "v2", 10);
-   G11.addEdge("v2", "v4", 1);
 
    std::cout << G11 << std::endl;
    G11.draw();
@@ -163,7 +155,7 @@ int main() {
    testNodeAdjacent();
    testGraphConnection();
    testRemoveEdge();
-   testDraw2();
+   testDraw();
 
    std::cout << "***************************************" << std::endl
              << "       TESTING GRAPH ALGORITHM         " << std::endl

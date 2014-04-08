@@ -6,6 +6,7 @@
 #ifndef GRAPH_HH
 #define GRAPH_HH 1
 
+#include <algorithm>
 #include <utility>
 #include <string>
 #include <vector>
@@ -38,7 +39,6 @@ public:
    void   addEdge(std::string fromNode, std::string toNode, double cost = 1);
    void   removeEdge(std::string from, std::string toNode);
    void   setWeight(std::string fromNode, std::string toNode, double cost);
-   bool   hasEdge(std::string fromNode, std::string toNode) const;
    bool   hasNegativeWeigth() const;
    bool   isConnected() const;
    double weight(std::string fromNode, std::string toNode) const;  // return weight of the edge
@@ -47,9 +47,10 @@ public:
    unsigned maxRank() const;
 
    std::set<std::string> adjacent(std::string) const; // return a vector of nodes adjacent to v
-
+   inline bool hasEdge(std::string fromNode, std::string toNode) const;
    inline bool isOriented() const;
    inline bool isRegular() const; // minRank = maxRank = k -> regularity of graph is k
+   inline bool exist(std::string) const; // control if exist node
 
    inline unsigned nodes() const; // return the number of Node
    inline unsigned edges() const; // return the number of edge
