@@ -52,28 +52,19 @@ void Graph::generateEdge(int edgeType) {
          for(unsigned i = 0; i < nodes(); ++i) {
             int randNode1 = rand() % nodes();
             int randNode2 = rand() % nodes();
+
             if(randNode1 != randNode2)
-               try {
-                  addEdge(_node.at(randNode1), _node.at(randNode2));
-               }
-               catch(std::exception e) {
-                  std::cout << e.what();
-               }
+               addEdge(_node.at(randNode1), _node.at(randNode2));
          }
       }
       case 1: { // circular
-         std::vector<std::string>::const_iterator it;
          std::string initialNode = _node.at(0);
+         std::vector<std::string>::const_iterator it;
          for(it = _node.begin(); it != _node.end(); ++it) {
-            try {
-               if(it + 1 != _node.end())
-                  addEdge(*it, *(it + 1));
-               else
-                  addEdge(*it, initialNode);
-            }
-            catch(std::exception e) {
-               std::cout << e.what();
-            }
+            if(it + 1 != _node.end())
+               addEdge(*it, *(it + 1));
+            else
+               addEdge(*it, initialNode);
          }
       }
    }
@@ -97,17 +88,27 @@ void Graph::addNode(std::string node) {
 
 void Graph::removeNode(std::string node) {
    std::vector<std::string>::iterator v;
+   std::vector<link>::iterator e;
+   std::vector<link> edgeToRemove;
    v = std::find(_node.begin(), _node.end(), node);
    if(v != _node.end()) {
-      _node.erase(v);
       // remove the edge connected to the node
-      std::vector<link>::const_iterator e;
       for(e = _edge.begin(); e != _edge.end(); ++e) {
-         if(e->first == node)
-            removeEdge(e->first, e->second);
-         if(e->second == node)
-            removeEdge(e->second, e->first);
+         if(direct) {
+            if(e->first == node || e->second == node)
+               edgeToRemove.push_back(std::make_pair(e->first, e->second));
+               //removeEdge(e->first, e->second);
+         }
+         else {
+            if(e->first == node)
+               edgeToRemove.push_back(std::make_pair(e->first, e->second));
+               //removeEdge(e->first, e->second);
+         }
       }
+      // removing edges
+      for(e = edgeToRemove.begin(); e != edgeToRemove.end(); ++e)
+         removeEdge(e->first, e->second);
+      _node.erase(v);
    }
 }
 
@@ -131,19 +132,16 @@ void Graph::addEdge(std::string fromNode, std::string toNode, double cost) {
 }
 
 void Graph::removeEdge(std::string fromNode, std::string toNode) {
-   if(exist(fromNode) && exist(toNode)) {
+   if(hasEdge(fromNode, toNode) && exist(fromNode) && exist(toNode)) {
       if(direct) {
-         _edge.erase(std::find(_edge.begin(),
-                               _edge.end(),
+         _edge.erase(std::find(_edge.begin(), _edge.end(), 
                                std::make_pair(fromNode, toNode)));
          _edgeWeight.erase(std::make_pair(fromNode, toNode));
       }
       else { //undirected graph
-         _edge.erase(std::find(_edge.begin(),
-                               _edge.end(),
+         _edge.erase(std::find(_edge.begin(), _edge.end(), 
                                std::make_pair(fromNode, toNode)));
-         _edge.erase(std::find(_edge.begin(),
-                               _edge.end(),
+         _edge.erase(std::find(_edge.begin(), _edge.end(), 
                                std::make_pair(toNode, fromNode)));
          _edgeWeight.erase(std::make_pair(fromNode, toNode));
          _edgeWeight.erase(std::make_pair(toNode, fromNode));
@@ -171,7 +169,7 @@ double Graph::weight(std::string fromNode, std::string toNode) const {
 
 void Graph::print(std::ostream& os) const {
    std::vector<std::string>::const_iterator V;
-   std::vector<link>::const_iterator E = _edge.begin();
+   std::vector<link>::const_iterator E;
    os << "Node : { ";
    for(V = _node.begin(); V != _node.end(); ++V) {
       os << *V;
@@ -204,10 +202,11 @@ unsigned Graph::minRank() const {
    unsigned min;
    std::vector<std::string>::const_iterator v = _node.begin();
    min = rank(*v);
-   for(v = _node.begin(); v != _node.end(); ++v) {
-      if(v + 1 != _node.end())
-         if(rank(*(v + 1)) < min)
-            min = rank(*(v + 1));
+
+   for(v = _node.begin() + 1; v != _node.end(); ++v) {
+      if(v != _node.end())
+         if(rank(*v) < min)
+            min = rank(*v);
    }
    return min;
 }
@@ -216,10 +215,11 @@ unsigned Graph::maxRank() const {
    unsigned max;
    std::vector<std::string>::const_iterator v = _node.begin();
    max = rank(*v);
-   for(v = _node.begin(); v != _node.end(); ++v) {
-      if(v + 1 != _node.end())
-         if(rank(*(v + 1)) > max)
-            max = rank(*(v + 1));
+
+   for(v = _node.begin() + 1; v != _node.end(); ++v) {
+      if(v != _node.end())
+         if(rank(*v) > max)
+            max = rank(*v);
    }
    return max;
 }
@@ -263,7 +263,7 @@ void Graph::generateHtmlPage() {
    system("cp G.html html/");
    system("rm G.html");
 }
-//I apologize for the ugliness of this function
+
 void Graph::generateJavascriptPage() {
    std::ofstream f_js("G.js");
    f_js << "$(document).ready(function() {" << std::endl

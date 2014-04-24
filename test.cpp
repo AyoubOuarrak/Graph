@@ -141,8 +141,36 @@ void testDraw() {
 
 void testDraw2() {
    std::cout << "**** test 12: draw large graph using dracula" << std::endl;
-   Graph G12("1-20", Graph::random);
+   Graph G12(Graph::undirected);
+   G12.addNode("E");
+   G12.addNode("T");
+   G12.addNode("P");
+   G12.addNode("+");
+   G12.addNode("*");
+   G12.addEdge("E", "E", 2);
+   G12.addEdge("E", "+");
+   G12.addEdge("E", "T");
+
+   G12.addEdge("E", "T");
+   G12.addEdge("T", "P");
+   
+   G12.addEdge("T", "T", 2);
+   G12.addEdge("T", "*");
+   G12.addEdge("T", "P");
    G12.draw();
+}
+
+void testRemoveNode2() {
+   Graph G(Graph::undirected);
+
+   G.addEdge("A", "B");
+   G.addEdge("B", "C");
+   G.addEdge("D", "A");
+   G.addEdge("A", "F");
+   G.addEdge("C", "A");
+   std::cout << G;
+   G.removeNode("A");
+   std::cout << G;
 }
 int main() {
    std::cout << "***************************************" << std::endl
@@ -155,8 +183,9 @@ int main() {
    testNodeAdjacent();
    testGraphConnection();
    testRemoveEdge();
-   testDraw();
+   testDraw2();
 
+   testRemoveNode2();
    std::cout << "***************************************" << std::endl
              << "       TESTING GRAPH ALGORITHM         " << std::endl
              << "***************************************" << std::endl;

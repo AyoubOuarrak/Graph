@@ -50,7 +50,7 @@ public:
    inline bool hasEdge(std::string fromNode, std::string toNode) const;
    inline bool isOriented() const;
    inline bool isRegular() const; // minRank = maxRank = k -> regularity of graph is k
-   inline bool exist(std::string) const; // control if exist node
+   inline bool exist(std::string) const; // check if exist node
 
    inline unsigned nodes() const; // return the number of Node
    inline unsigned edges() const; // return the number of edge
