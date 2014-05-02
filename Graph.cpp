@@ -6,11 +6,12 @@
 #include <ctime>
 #include "Graph.hh"
 #include "Utility.hh"
-#include "Graph_Algorithm.hh"
 
 using namespace GraphLib;
 
 typedef std::pair<std::string, std::string> link;
+typedef std::map<std::string, bool> mapStringBool;
+
 int  Graph::random = 0;
 int  Graph::circular = 1;
 bool Graph::directed = true;
@@ -42,19 +43,19 @@ Graph::Graph(std::string regex, int edgeType, bool graphType) {
             _node.push_back(utility::to_string(*it));
       }
    }
-   generateEdge(edgeType);
+   _generateEdge(edgeType);
 }
 
-void Graph::generateEdge(int edgeType) {
+void Graph::_generateEdge(int edgeType) {
    switch(edgeType) {
       case 0: { // random
          srand(time(NULL));
          for(unsigned i = 0; i < nodes(); ++i) {
             int randNode1 = rand() % nodes();
             int randNode2 = rand() % nodes();
-
+            double randWeight = rand() % 100;
             if(randNode1 != randNode2)
-               addEdge(_node.at(randNode1), _node.at(randNode2));
+               addEdge(_node.at(randNode1), _node.at(randNode2), randWeight);
          }
       }
       case 1: { // circular
@@ -80,6 +81,14 @@ Graph Graph::generateRandomGraph(int maxNode, bool graphType) {
 
    Graph G(ivt, Graph::random, graphType);
    return G;
+}
+
+Graph Graph::transpose() {
+  Graph G;
+  for(auto e = _edge.begin(); e != _edge.end(); ++e) {
+    G.addEdge(e->second, e->first, weight(e->first, e->second));
+  }
+  return G;
 }
 
 void Graph::addNode(std::string node) {
@@ -116,18 +125,21 @@ void Graph::addEdge(std::string fromNode, std::string toNode, double cost) {
    // if the nodes do not exist, create them
    if(!exist(fromNode))
       addNode(fromNode);
+   
    if(!exist(toNode))
       addNode(toNode);
 
-   if(direct) {
-      _edge.push_back(std::make_pair(fromNode, toNode));
-      _edgeWeight[std::make_pair(fromNode, toNode)] = cost;
-   }
-   else { //undirected graph
-      _edge.push_back(std::make_pair(fromNode, toNode));
-      _edge.push_back(std::make_pair(toNode, fromNode));
-      _edgeWeight[std::make_pair(fromNode, toNode)] = cost;
-      _edgeWeight[std::make_pair(toNode, fromNode)] = cost;
+   if(!hasEdge(fromNode, toNode)) {
+      if(direct) {
+         _edge.push_back(std::make_pair(fromNode, toNode));
+         _edgeWeight[std::make_pair(fromNode, toNode)] = cost;
+      }
+      else { //undirected graph
+         _edge.push_back(std::make_pair(fromNode, toNode));
+         _edge.push_back(std::make_pair(toNode, fromNode));
+         _edgeWeight[std::make_pair(fromNode, toNode)] = cost;
+         _edgeWeight[std::make_pair(toNode, fromNode)] = cost;
+      }
    }
 }
 
@@ -161,12 +173,6 @@ void Graph::setWeight(std::string fromNode, std::string toNode, double cost) {
    }
 }
 
-double Graph::weight(std::string fromNode, std::string toNode) const {
-   if(_edgeWeight.find(std::make_pair(fromNode, toNode)) != _edgeWeight.end())
-      return _edgeWeight.at(std::make_pair(fromNode, toNode));
-   else throw std::out_of_range("invalid edge");
-}
-
 void Graph::print(std::ostream& os) const {
    std::vector<std::string>::const_iterator V;
    std::vector<link>::const_iterator E;
@@ -188,14 +194,14 @@ void Graph::print(std::ostream& os) const {
    os << std::endl << "}" << std::endl;
 }
 
-std::set<std::string> Graph::adjacent(std::string v) const {
-   std::set<std::string> adjV;
+std::list<std::string> Graph::adjacent(std::string v) const {
+   std::list<std::string> adj;
    std::vector<link>::const_iterator E;
    for(E = _edge.begin(); E != _edge.end(); ++E) {
       if(E->first == v)
-         adjV.insert(E->second);
+         adj.push_back(E->second);
    }
-   return adjV;
+   return adj;
 }
 
 unsigned Graph::minRank() const {
@@ -233,12 +239,7 @@ bool Graph::hasNegativeWeigth() const {
    return false;
 }
 
-bool Graph::isConnected() const {
-   GraphAlgorithm::DepthFirstSearch dfs(*this, _node[0]);
-   return dfs.nodeConnected() == _node.size();
-}
-
-void Graph::generateHtmlPage() {
+void Graph::_generateHtmlPage() const {
    std::ofstream f_html("G.html");
    system("mkdir html");
    f_html << "<html>" << std::endl
@@ -264,7 +265,7 @@ void Graph::generateHtmlPage() {
    system("rm G.html");
 }
 
-void Graph::generateJavascriptPage() {
+void Graph::_generateJavascriptPage() const {
    std::ofstream f_js("G.js");
    f_js << "$(document).ready(function() {" << std::endl
         << "var width = $(document).width();" << std::endl   // dimension of the div
@@ -315,8 +316,142 @@ void Graph::generateJavascriptPage() {
    system("rm G.js");
 }
 
-void Graph::draw() {
-   generateHtmlPage();
-   generateJavascriptPage();
+void Graph::draw() const {
+   _generateHtmlPage();
+   _generateJavascriptPage();
    system("xdg-open html/G.html &"); // execute default browser
+}
+
+// Time Complexity of this method is same as time complexity of DFS traversal which is O(V+E)
+bool Graph::isCyclic() const {
+   if(direct)
+      return _isCyclicDirected();
+   else
+      return _isCyclicUnDirected();
+}
+
+bool Graph::_isCyclicDirected() const {
+   // Mark all the vertices as not visited and not part of recursion
+   // stack
+   mapStringBool visited;
+   mapStringBool recStack;
+   std::vector<std::string>::const_iterator i;
+   for(i = _node.begin(); i != _node.end(); ++i) {
+      visited[*i] = false;
+      recStack[*i] = false;
+   }
+ 
+   // Call the recursive helper function to detect cycle in different
+   // DFS trees
+   for(i = _node.begin(); i != _node.end(); ++i) {
+      if(_isCyclicUtilDirected(*i, visited, recStack))
+         return true;
+   }
+   return false;
+}
+
+bool Graph::_isCyclicUtilDirected(std::string v, mapStringBool visited, mapStringBool recStack) const {
+   if(visited[v] == false) {
+      // Mark the current node as visited and part of recursion stack
+      visited[v]= true;
+      recStack[v]= true;
+ 
+      // Recur for all the vertices adjacent to this vertex
+      for(auto i = adjacent(v).begin(); i != adjacent(v).end(); ++i) {
+         if(!visited[*i] && _isCyclicUtilDirected(*i, visited, recStack))
+            return true;
+         else if(recStack[*i])
+            return true;
+      }
+   }
+   recStack[v]= false;  // remove the vertex from recursion stack
+   return false;
+}
+
+// Returns true if the graph contains a cycle, else false.
+bool Graph::_isCyclicUnDirected() const {
+   // Mark all the vertices as not visited and not part of recursion
+   // stack
+   mapStringBool visited;
+   for(auto i = _node.begin(); i != _node.end(); ++i) 
+      visited[*i] = false;
+   
+   // Call the recursive helper function to detect cycle in different
+   // DFS trees
+   for(auto i = _node.begin(); i != _node.end(); ++i) {
+      if(!visited[*i] && _isCyclicUtilUnDirected(*i, visited, "-1"))
+         return true;
+   }
+   return false;
+}
+
+// A recursive function that uses visited[] and parent to detect
+// cycle in subgraph reachable from vertex v.
+bool Graph::_isCyclicUtilUnDirected(std::string v, mapStringBool visited, std::string parent) const {
+   // Mark the current node as visited
+   visited[v] = true;
+ 
+   // Recur for all the vertices adjacent to this vertex
+   for(auto i = adjacent(v).begin(); i != adjacent(v).end(); ++i) {
+      // If an adjacent is not visited, then recur for that adjacent
+      if(!visited[*i]) {
+         if(_isCyclicUtilUnDirected(*i, visited, v))
+            return true;
+      }
+ 
+      // If an adjacent is visited and not parent of current vertex,
+      // then there is a cycle.
+      else if(*i != parent)
+         return true;
+   }
+   return false;
+}
+// FIXME
+// Assigns colors (starting from 0) to all vertices and prints
+// the assignment of colors
+void Graph::coloring() {
+   std::map<std::string, int> result;
+   // Assign the first color to first vertex
+   result[*(_node.begin())] = 0;
+
+   // Initialize remaining V-1 vertices as unassigned
+   for(auto u = _node.begin() + 1; u != _node.end(); ++u)
+      result[*u] = -1;  // no color is assigned to u
+ 
+   // A temporary array to store the available colors. True
+   // value of available[cr] would mean that the color cr is
+   // assigned to one of its adjacent vertices
+   std::map<std::string, bool> available;
+   for(auto cr = _node.begin(); cr != _node.end(); ++cr)
+      available[*cr] = false;
+ 
+   // Assign colors to remaining V-1 vertices
+   for(auto u = _node.begin() + 1; u != _node.end(); ++u) {   
+      // Process all adjacent vertices and flag their colors
+      // as unavailable
+      std::list<std::string> adj = adjacent(*u); 
+      for(auto i = adj.begin(); i != adj.end(); ++i) 
+         if(result[*i] != -1)
+            available[result.find(*i)->first] = true;
+      
+      // Find the first available color
+      unsigned color = 0;
+      for(auto v = _node.begin(); v != _node.end(); ++v) {
+         if(available[*v] == false) 
+            break;
+         ++color;
+      }
+
+      result[*u] = color; // Assign the found color
+
+      // Reset the values back to false for the next iteration
+      for(auto i = adj.begin(); i != adj.end(); ++i)
+         if(result[*i] != -1)
+            available[result.find(*i)->first] = false;
+   }
+ 
+   // print the result
+   for(auto u = _node.begin(); u != _node.end(); ++u) 
+      std::cout << "Vertex " << *u << " --->  Color " << result[*u] << std::endl;
+
 }

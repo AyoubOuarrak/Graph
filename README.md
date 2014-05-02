@@ -1,4 +1,4 @@
-### **Graph**
+#Graph
 
 C++ graph library that offers the possibility to :
 
@@ -13,10 +13,10 @@ C++ graph library that offers the possibility to :
 - Draw the graph using a [javascript library](http://www.graphdracula.net/)
 - Other utility graph functions
 
-### **Installation**
+#Installation
 On linux run the command make 
 
-### **Example**
+#Example
 Graph G1 = Graph::generateRandomGraph(10);   
 Graph G4(Graph::undirected);  
 Graph G2("a-g", Graph::circular);  

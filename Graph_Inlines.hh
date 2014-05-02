@@ -1,5 +1,6 @@
 #ifndef GRAPH_INLINES_HH
 #define GRAPH_INLINES_HH 1
+
 typedef std::pair<std::string, std::string> link;  // eg. <v. u>
 
 inline unsigned
@@ -49,10 +50,17 @@ Graph::exist(std::string node) const {
 
 inline bool
 Graph::hasEdge(std::string fromNode, std::string toNode) const {
-   return std::find(_edge.begin(),
-                    _edge.end(),
+   return std::find(_edge.begin(), _edge.end(),
                     std::make_pair(fromNode, toNode)) != _edge.end();
 }
+
+inline double 
+Graph::weight(std::string fromNode, std::string toNode) const {
+   if(_edgeWeight.find(std::make_pair(fromNode, toNode)) != _edgeWeight.end())
+      return _edgeWeight.at(std::make_pair(fromNode, toNode));
+   return 0;
+}
+
 inline std::ostream&
 operator<<(std::ostream& os, const Graph& g) {
    g.print(os);
