@@ -32,7 +32,6 @@ public:
    ~Graph() = default;
 
    Graph  transpose();     
-
    void   coloring(); //Graph Coloring (Greedy Algorithm)
    void   draw() const;  //draw the graph using the javascript library: "dracula"
    void   print(std::ostream&) const;
@@ -47,7 +46,7 @@ public:
    unsigned minRank() const;
    unsigned maxRank() const;
 
-   std::list<std::string> adjacent(std::string) const; // return a vector of nodes adjacent to v
+   std::list<std::string> adjacent(std::string) const; // return a list of nodes adjacent to v
 
    inline bool hasEdge(std::string fromNode, std::string toNode) const;
    inline bool isOriented() const;
