@@ -3,6 +3,7 @@
 #include <iterator>
 #include <cstdlib>
 #include <fstream>
+#include <climits>
 #include <ctime>
 #include "Graph.hh"
 #include "Utility.hh"
@@ -324,13 +325,6 @@ void Graph::draw() const {
 
 // Time Complexity of this method is same as time complexity of DFS traversal which is O(V+E)
 bool Graph::isCyclic() const {
-   if(direct)
-      return _isCyclicDirected();
-   else
-      return _isCyclicUnDirected();
-}
-
-bool Graph::_isCyclicDirected() const {
    // Mark all the vertices as not visited and not part of recursion
    // stack
    mapStringBool visited;
@@ -344,13 +338,13 @@ bool Graph::_isCyclicDirected() const {
    // Call the recursive helper function to detect cycle in different
    // DFS trees
    for(i = _node.begin(); i != _node.end(); ++i) {
-      if(_isCyclicUtilDirected(*i, visited, recStack))
+      if(_isCyclicUtil(*i, visited, recStack))
          return true;
    }
    return false;
 }
 
-bool Graph::_isCyclicUtilDirected(std::string v, mapStringBool visited, mapStringBool recStack) const {
+bool Graph::_isCyclicUtil(std::string v, mapStringBool visited, mapStringBool recStack) const {
    if(visited[v] == false) {
       // Mark the current node as visited and part of recursion stack
       visited[v]= true;
@@ -358,7 +352,7 @@ bool Graph::_isCyclicUtilDirected(std::string v, mapStringBool visited, mapStrin
  
       // Recur for all the vertices adjacent to this vertex
       for(auto i = adjacent(v).begin(); i != adjacent(v).end(); ++i) {
-         if(!visited[*i] && _isCyclicUtilDirected(*i, visited, recStack))
+         if(!visited[*i] && _isCyclicUtil(*i, visited, recStack))
             return true;
          else if(recStack[*i])
             return true;
@@ -368,48 +362,20 @@ bool Graph::_isCyclicUtilDirected(std::string v, mapStringBool visited, mapStrin
    return false;
 }
 
-// Returns true if the graph contains a cycle, else false.
-bool Graph::_isCyclicUnDirected() const {
-   // Mark all the vertices as not visited and not part of recursion
-   // stack
-   mapStringBool visited;
-   for(auto i = _node.begin(); i != _node.end(); ++i) 
-      visited[*i] = false;
-   
-   // Call the recursive helper function to detect cycle in different
-   // DFS trees
-   for(auto i = _node.begin(); i != _node.end(); ++i) {
-      if(!visited[*i] && _isCyclicUtilUnDirected(*i, visited, "-1"))
-         return true;
-   }
-   return false;
-}
-
-// A recursive function that uses visited[] and parent to detect
-// cycle in subgraph reachable from vertex v.
-bool Graph::_isCyclicUtilUnDirected(std::string v, mapStringBool visited, std::string parent) const {
-   // Mark the current node as visited
-   visited[v] = true;
- 
-   // Recur for all the vertices adjacent to this vertex
-   for(auto i = adjacent(v).begin(); i != adjacent(v).end(); ++i) {
-      // If an adjacent is not visited, then recur for that adjacent
-      if(!visited[*i]) {
-         if(_isCyclicUtilUnDirected(*i, visited, v))
-            return true;
-      }
- 
-      // If an adjacent is visited and not parent of current vertex,
-      // then there is a cycle.
-      else if(*i != parent)
-         return true;
-   }
-   return false;
-}
-// FIXME
+// FIXED By Wyvilo
 // Assigns colors (starting from 0) to all vertices and prints
 // the assignment of colors
 void Graph::coloring() {
+   Graph Gt = this->transpose();
+
+   // remove common edges
+   for(auto e = this->_edge.begin(); e != this->_edge.end(); ++e)
+      Gt.removeEdge(e->first, e->second);
+
+   // temporaly turn graph into undirected (if not)
+   for(auto e = this->_edge.begin(); e != this->_edge.end(); ++e)
+      this->addEdge(e->first, e->second, 1);
+
    std::map<std::string, int> result;
    // Assign the first color to first vertex
    result[*(_node.begin())] = 0;
@@ -418,40 +384,34 @@ void Graph::coloring() {
    for(auto u = _node.begin() + 1; u != _node.end(); ++u)
       result[*u] = -1;  // no color is assigned to u
  
-   // A temporary array to store the available colors. True
-   // value of available[cr] would mean that the color cr is
-   // assigned to one of its adjacent vertices
-   std::map<std::string, bool> available;
-   for(auto cr = _node.begin(); cr != _node.end(); ++cr)
-      available[*cr] = false;
- 
    // Assign colors to remaining V-1 vertices
    for(auto u = _node.begin() + 1; u != _node.end(); ++u) {   
       // Process all adjacent vertices and flag their colors
       // as unavailable
       std::list<std::string> adj = adjacent(*u); 
-      for(auto i = adj.begin(); i != adj.end(); ++i) 
-         if(result[*i] != -1)
-            available[result.find(*i)->first] = true;
       
-      // Find the first available color
-      unsigned color = 0;
-      for(auto v = _node.begin(); v != _node.end(); ++v) {
-         if(available[*v] == false) 
-            break;
+      signed color = -1;
+      bool found = false;
+      while(!found) {
          ++color;
+         found = true;
+         for(auto v = adj.begin(); v != adj.end(); ++v) {
+            if(color == result[*v]) {
+               found = false;
+               break;
+            }
+         } 
       }
 
       result[*u] = color; // Assign the found color
-
-      // Reset the values back to false for the next iteration
-      for(auto i = adj.begin(); i != adj.end(); ++i)
-         if(result[*i] != -1)
-            available[result.find(*i)->first] = false;
    }
  
    // print the result
    for(auto u = _node.begin(); u != _node.end(); ++u) 
       std::cout << "Vertex " << *u << " --->  Color " << result[*u] << std::endl;
 
+   for(auto e = Gt._edge.begin(); e != Gt._edge.end(); ++e)
+      this->removeEdge(e->first, e->second);   
+
 }
+
