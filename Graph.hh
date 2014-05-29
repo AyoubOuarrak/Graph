@@ -1,8 +1,8 @@
 /*
- *  Author : Ouarrak Ayoub
- *  Date   : ~/04/2014
+   @file    Graph.hh
+   @author  Ayoub Ouarrak, ouarrakayoub@gmail.com
+   @version 1.0
 */
-
 #ifndef GRAPH_LIB_HH
 #define GRAPH_LIB_HH 1
 
@@ -15,26 +15,38 @@
  
 namespace GraphLib {
 
+/** C++ implementation of a directed/undirected graph using the STL 
+    and the dracula javasript library to draw the graph
+*/
 class Graph {
 
 public:
-   static int random;       // generate a random edge to connect the Node
-   static int circular;     // generate a edge that forms a circular graph
-   static bool directed;    // generate directed Graph
-   static bool undirected;  // generate undirected Graph
-   static Graph  generateRandomGraph(int, bool graphType = directed); // generate random Graph with (max) n Node
+   /** generate a random edge to connect the Node */
+   static int random;       
+   /** generate a edge that forms a circular graph */
+   static int circular;  
+   /** generate directed Graph */
+   static bool directed;  
+   /** generate undirected Graph */
+   static bool undirected;  
+   /** generate random Graph with (max) n Node */
+   static Graph  generateRandomGraph(int, bool graphType = directed); 
 
-   Graph& operator=(const Graph&) = delete; // operator= is not implemented
+   /** operator= is not implemented */
+   Graph& operator=(const Graph&) = delete; 
 
    explicit Graph(bool graphType = directed);
-   Graph(std::string regex, int edgeMode, bool graphType = directed);  // add Node using regex eg. G("A-Z"), G(1-5), G(12-82)
-   Graph(const Graph&); //copy ctr
+   explicit Graph(int maxNodes);
+   
+   Graph(std::string regex, int edgeMode, bool graphType = directed);  
+   Graph(const Graph&); 
+   /** default Distructor*/
    ~Graph() = default;  
 
-   Graph transpose();   // return the transpose of this
-   void  coloring();    // Graph Coloring (Greedy Algorithm) 
-   void  draw() const;  // draw the graph using html/javascript
-   void  print(std::ostream&) const;   // print the graph on the standard output 
+   Graph transpose();   
+   void  coloring();    
+   void  draw() const;  
+   void  print(std::ostream&) const;   
    void  addNode(std::string node);    
    void  removeNode(std::string node); 
    void  addEdge(std::string fromNode, std::string toNode, double cost = 1);
@@ -42,50 +54,59 @@ public:
    void  setWeight(std::string fromNode, std::string toNode, double cost);
    bool  hasNegativeWeigth() const;
    bool  isCyclic() const;
+   bool  isConnected() const;
+   int   isEulerian() const; 
 
    unsigned minRank() const;
    unsigned maxRank() const;
 
-   std::list<std::string> adjacent(std::string v) const; // return a list of nodes adjacent to v
+   std::list<std::string> adjacent(std::string v) const; 
 
    inline bool hasEdge(std::string fromNode, std::string toNode) const;
    inline bool isOriented() const;
-   inline bool isRegular() const;        // minRank = maxRank = k -> regularity of graph is k
-   inline bool exist(std::string) const; // check if exist node
+   inline bool isRegular() const;        
+   inline bool exist(std::string) const; 
 
-   inline unsigned nodes() const; // return the number of Node
-   inline unsigned edges() const; // return the number of edge
-   inline unsigned rank(std::string v) const; // n° of adjacent Node of v
-   inline double   weight(std::string fromNode, std::string toNode) const;  // return weight of the edge
+   inline unsigned nodes() const;
+   inline unsigned edges() const; 
+   inline unsigned rank(std::string v) const; 
+   inline double   weight(std::string fromNode, std::string toNode) const;  
 
-
-private:
-   bool direct;  // direct graph or undirect
+private: 
+   /** direct graph or undirect */
+   bool direct;  
    
-   typedef std::pair<std::string, std::string> link;  // eg. <v. u>
+   /** eg. <v. u> */
+   typedef std::pair<std::string, std::string> link;  
    typedef std::map<std::string, bool> mapStringBool;
 
-   std::vector<std::string> _node;        // eg. {v1, v2, v3, ...}
-   std::vector<link>        _edge;        // eg. {<v1, u1>, <v2, u2>, ...}
-   std::map<link, double>   _edgeWeight;  // eg. {<v1,u1> = 1, <v2,u2> = 1 ,...}
+   /** eg. {v1, v2, v3, ...} */
+   std::vector<std::string> _node;     
+   /** eg. {<v1, u1>, <v2, u2>, ...}  */  
+   std::vector<link>        _edge;   
+   /** eg. {<v1,u1> = 1, <v2,u2> = 1 ,...}  */    
+   std::map<link, double>   _edgeWeight;  
 
-   inline std::vector<std::string> _Node() const;        // return vector Node
-   inline std::vector<link>        _Edge() const;        // return vector edge
-   inline std::map<link, double>   _EdgeWeight() const;  // return map edgeWeight
+   inline std::vector<std::string> _Node() const;        
+   inline std::vector<link>        _Edge() const;        
+   inline std::map<link, double>   _EdgeWeight() const;  
    
-   void _generateHtmlPage() const;   // function to draw the graph using javascript and html
+   void _DFSUtil(std::string v, mapStringBool& visited) const;
+   void _generateHtmlPage() const;   
    void _generateJavascriptPage() const;
-   void _generateEdge(int);          // generate edge to connect the Graph, using random/circular method.
+   void _generateEdge(int);          
 
-   // This function is a variation of DFSUytil() in http://www.geeksforgeeks.org/archives/18
    bool _isCyclicUtil(std::string v, mapStringBool visited, mapStringBool recStack) const; 
 
-};  // class Graph
+/** class Graph */
+};  
 
-std::ostream& operator<<(std::ostream& os, const GraphLib::Graph& g);  // operator << overloaded
+std::ostream& operator<<(std::ostream& os, const GraphLib::Graph& g);  
 
-#include "Graph_Inlines.hh"  // include inline functions
+/** include inline functions */
+#include "Graph_Inlines.hh"  
 
-} //namespace GraphLib
+/** namespace GraphLib */
+} 
 
 #endif //GRAPH_LIB_HH

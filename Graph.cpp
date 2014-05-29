@@ -1,3 +1,8 @@
+/*
+   @file    Graph.cpp
+   @author  Ayoub Ouarrak, ouarrakayoub@gmail.com
+   @version 1.0
+*/
 #include <algorithm>
 #include <iostream>
 #include <iterator>
@@ -18,26 +23,54 @@ int  Graph::circular = 1;
 bool Graph::directed = true;
 bool Graph::undirected = false;
 
+/**
+   Constructor
+   
+   @param  graphType  directed/undirect graph
+*/
 Graph::Graph(bool graphType) {
    direct = graphType;
 }
 
+/** 
+  Create Graph with nodes from 1 to maxNodes
+  
+  @param maxNodes max nodes of the graph
+*/
+Graph::Graph(int maxNodes) {
+  
+}
+
+/**
+   Copy contructor
+
+   @param  Graph graph to copy
+*/
 Graph::Graph(const Graph& G) {
    _node = G._Node();
    _edge = G._Edge();
    _edgeWeight = G._EdgeWeight();
 }
 
+/**
+   Add Node using regex eg. G("A-Z"), G(1-5), G(12-82)
+
+   @param regex     regex eg. A-Z, 1-6
+   @param edgeType  random/circular edges generation
+   @param graphType directed/undirect graph
+*/
 Graph::Graph(std::string regex, int edgeType, bool graphType) {
    direct = graphType;
    if(utility::checkIfInterval(regex)) {
-      if(regex.length() == 3) {  //1-9,  a-z,  A-Z ..
+      /** 1-9,  a-z,  A-Z ... */
+      if(regex.length() == 3) {  
          std::vector<char> tmp = utility::regexChar(regex);
          std::vector<char>::const_iterator it;
          for(it = tmp.begin(); it != tmp.end(); ++it)
             _node.push_back(utility::to_string(*it));
       }
-      else if(regex.length() > 3) { //10-17,  12-102 ...
+      /** 10-17,  12-102 ... */
+      else if(regex.length() > 3) { 
          std::vector<int> tmp = utility::regexInt(regex);
          std::vector<int>::const_iterator it;
          for(it = tmp.begin(); it != tmp.end(); ++it)
@@ -47,9 +80,16 @@ Graph::Graph(std::string regex, int edgeType, bool graphType) {
    _generateEdge(edgeType);
 }
 
+/*
+   Generate edges and add them to the graph
+
+   @param  edgeType  random/circular edges generation
+   @return void
+*/
 void Graph::_generateEdge(int edgeType) {
    switch(edgeType) {
-      case 0: { // random
+      /** random */
+      case 0: { 
          srand(time(NULL));
          for(unsigned i = 0; i < nodes(); ++i) {
             int randNode1 = rand() % nodes();
@@ -59,7 +99,8 @@ void Graph::_generateEdge(int edgeType) {
                addEdge(_node.at(randNode1), _node.at(randNode2), randWeight);
          }
       }
-      case 1: { // circular
+      /** circular */
+      case 1: { 
          std::string initialNode = _node.at(0);
          std::vector<std::string>::const_iterator it;
          for(it = _node.begin(); it != _node.end(); ++it) {
@@ -72,6 +113,13 @@ void Graph::_generateEdge(int edgeType) {
    }
 }
 
+/** 
+   Generate random graph
+   
+   @param maxNode   max node of the generated graph
+   @param graphType directed/undirect graph
+   @return Graph
+*/
 Graph Graph::generateRandomGraph(int maxNode, bool graphType) {
    srand(time(NULL));
    int fromInt = rand() % maxNode;
@@ -84,6 +132,11 @@ Graph Graph::generateRandomGraph(int maxNode, bool graphType) {
    return G;
 }
 
+/** 
+   Transpose of this graph 
+
+   @return Graph
+*/
 Graph Graph::transpose() {
   Graph G;
   for(auto e = _edge.begin(); e != _edge.end(); ++e) {
@@ -92,38 +145,56 @@ Graph Graph::transpose() {
   return G;
 }
 
+/**
+   Add node to the graph
+
+   @param  node node to add
+   @return void
+*/
 void Graph::addNode(std::string node) {
       _node.push_back(node);
 }
 
+/**
+   Remove node from the graph
+
+   @param  node node to remove
+   @return void
+*/
 void Graph::removeNode(std::string node) {
    std::vector<std::string>::iterator v;
    std::vector<link>::iterator e;
    std::vector<link> edgeToRemove;
    v = std::find(_node.begin(), _node.end(), node);
    if(v != _node.end()) {
-      // remove the edge connected to the node
+      /** remove the edge connected to the node */
       for(e = _edge.begin(); e != _edge.end(); ++e) {
          if(direct) {
             if(e->first == node || e->second == node)
                edgeToRemove.push_back(std::make_pair(e->first, e->second));
-               //removeEdge(e->first, e->second);
          }
          else {
             if(e->first == node)
                edgeToRemove.push_back(std::make_pair(e->first, e->second));
-               //removeEdge(e->first, e->second);
          }
       }
-      // removing edges
+      /** removing edges */
       for(e = edgeToRemove.begin(); e != edgeToRemove.end(); ++e)
          removeEdge(e->first, e->second);
       _node.erase(v);
    }
 }
 
+/**
+   Add edge to the graph
+
+   @param  fromNode edge from node
+   @param  toNode   edge to node
+   @param  cost     weight of the edge, default is 1
+   @return void
+*/
 void Graph::addEdge(std::string fromNode, std::string toNode, double cost) {
-   // if the nodes do not exist, create them
+   /** if the nodes do not exist, create them */
    if(!exist(fromNode))
       addNode(fromNode);
    
@@ -135,7 +206,8 @@ void Graph::addEdge(std::string fromNode, std::string toNode, double cost) {
          _edge.push_back(std::make_pair(fromNode, toNode));
          _edgeWeight[std::make_pair(fromNode, toNode)] = cost;
       }
-      else { //undirected graph
+      /** undirected graph */
+      else { 
          _edge.push_back(std::make_pair(fromNode, toNode));
          _edge.push_back(std::make_pair(toNode, fromNode));
          _edgeWeight[std::make_pair(fromNode, toNode)] = cost;
@@ -144,6 +216,13 @@ void Graph::addEdge(std::string fromNode, std::string toNode, double cost) {
    }
 }
 
+/**
+   Remove edge from the graph
+
+   @param  fromNode edge from node
+   @param  toNode   edge to node
+   @return void
+*/
 void Graph::removeEdge(std::string fromNode, std::string toNode) {
    if(hasEdge(fromNode, toNode) && exist(fromNode) && exist(toNode)) {
       if(direct) {
@@ -151,7 +230,8 @@ void Graph::removeEdge(std::string fromNode, std::string toNode) {
                                std::make_pair(fromNode, toNode)));
          _edgeWeight.erase(std::make_pair(fromNode, toNode));
       }
-      else { //undirected graph
+      /** undirected graph */
+      else { 
          _edge.erase(std::find(_edge.begin(), _edge.end(), 
                                std::make_pair(fromNode, toNode)));
          _edge.erase(std::find(_edge.begin(), _edge.end(), 
@@ -162,18 +242,31 @@ void Graph::removeEdge(std::string fromNode, std::string toNode) {
    }
 }
 
+/** 
+   Set weight to edge(fromNode, toNode)
+
+   @param  toNode   edge to node
+   @param  fromNode edge from node
+   @return void
+*/
 void Graph::setWeight(std::string fromNode, std::string toNode, double cost) {
    if(exist(fromNode) && exist(toNode)) {
       if(direct) {
          _edgeWeight[std::make_pair(fromNode, toNode)] = cost;
       }
-      else { // undirected Graph
+      /** undirected Graph */
+      else { 
          _edgeWeight[std::make_pair(fromNode, toNode)] = cost;
          _edgeWeight[std::make_pair(toNode, fromNode)] = cost;
       }
    }
 }
 
+/** 
+   Print the graph on the standard output 
+
+   @return void
+*/
 void Graph::print(std::ostream& os) const {
    std::vector<std::string>::const_iterator V;
    std::vector<link>::const_iterator E;
@@ -195,6 +288,11 @@ void Graph::print(std::ostream& os) const {
    os << std::endl << "}" << std::endl;
 }
 
+/**
+   Max rank of a graph
+
+   @return unsigned
+*/
 std::list<std::string> Graph::adjacent(std::string v) const {
    std::list<std::string> adj;
    std::vector<link>::const_iterator E;
@@ -205,6 +303,11 @@ std::list<std::string> Graph::adjacent(std::string v) const {
    return adj;
 }
 
+/**
+   Min rank of a graph
+
+   @return unsigned
+*/
 unsigned Graph::minRank() const {
    unsigned min;
    std::vector<std::string>::const_iterator v = _node.begin();
@@ -218,6 +321,11 @@ unsigned Graph::minRank() const {
    return min;
 }
 
+/**
+   Max rank of a graph
+
+   @return unsigned
+*/
 unsigned Graph::maxRank() const {
    unsigned max;
    std::vector<std::string>::const_iterator v = _node.begin();
@@ -231,6 +339,11 @@ unsigned Graph::maxRank() const {
    return max;
 }
 
+/**
+   Control if graph has negative weight
+
+   @return bool
+*/
 bool Graph::hasNegativeWeigth() const {
    std::map<link, double>::const_iterator w;
    for(w = _edgeWeight.begin(); w != _edgeWeight.end(); ++w) {
@@ -240,6 +353,11 @@ bool Graph::hasNegativeWeigth() const {
    return false;
 }
 
+/**
+   Generate html page to draw the graph
+
+   @return void
+*/
 void Graph::_generateHtmlPage() const {
    std::ofstream f_html("G.html");
    system("mkdir html");
@@ -266,11 +384,18 @@ void Graph::_generateHtmlPage() const {
    system("rm G.html");
 }
 
+/**
+   Generate javascript page to draw the graph
+
+   @return void
+*/
 void Graph::_generateJavascriptPage() const {
    std::ofstream f_js("G.js");
    f_js << "$(document).ready(function() {" << std::endl
-        << "var width = $(document).width();" << std::endl   // dimension of the div
-        << "var height = $(document).height();" << std::endl // dimension of the div
+        /** dimension of the div */
+        << "var width = $(document).width();" << std::endl   
+        /** dimension of the div */
+        << "var height = $(document).height();" << std::endl 
         << "var g = new Graph();" << std::endl;
 
    if(direct)
@@ -278,7 +403,7 @@ void Graph::_generateJavascriptPage() const {
    else
       f_js << "g.edgeFactory.template.style.directed = false;" << std::endl;
 
-   //customize the nodes
+   /** customize the nodes */
    f_js << "var render = function(r, n) { " << std::endl
         << "var set = r.set().push(" << std::endl
         << "r.circle(n.point[0], n.point[1]-13, 60, 44).attr({\"fill\": \"#8b8d8b\", r : \"11px\""
@@ -286,16 +411,16 @@ void Graph::_generateJavascriptPage() const {
         << "r.text(n.point[0], n.point[1] + 5, (n.label || n.id)));" << std::endl
         << "return set; }" << std::endl;
 
-   //generate the nodes
+   /** generate the nodes */
    std::vector<std::string>::const_iterator v;
    for(v = _node.begin(); v != _node.end(); ++v) {
       f_js << "g.addNode(\"" << *v << "\", {render:render});" << std::endl;
    }
 
-   //generate the edges
+   /** generate the edges */
    std::vector<link>::const_iterator e;
    for(e = _edge.begin(); e != _edge.end(); ++e) {
-      // insert the weight into the javascript code
+      /** insert the weight into the javascript code */
       double w = weight(e->first, e->second);
 
       std::string st = ",{label : \"" + utility::to_string(w) + "\",\"" +
@@ -305,7 +430,7 @@ void Graph::_generateJavascriptPage() const {
       f_js << "g.addEdge(\"" << e->first << "\", \"" << e->second <<"\"" << st << ");" << std::endl;
    }
 
-   //draw using the dracula library
+   /** draw using the dracula library */
    f_js << "var layouter = new Graph.Layout.Spring(g);" << std::endl
         << "layouter.layout();" << std::endl
         << "var renderer = new Graph.Renderer.Raphael('canvas', g, width, height);" << std::endl
@@ -317,16 +442,26 @@ void Graph::_generateJavascriptPage() const {
    system("rm G.js");
 }
 
+/** 
+   draw the graph using html/javascript 
+
+   @return void
+*/
 void Graph::draw() const {
    _generateHtmlPage();
    _generateJavascriptPage();
-   system("xdg-open html/G.html &"); // execute default browser
+   /** execute default browser */
+   system("xdg-open html/G.html &"); 
 }
 
-// Time Complexity of this method is same as time complexity of DFS traversal which is O(V+E)
+/** 
+   Time Complexity of this method is same as time complexity of DFS traversal which is O(V+E)
+
+   @return bool
+*/
 bool Graph::isCyclic() const {
-   // Mark all the vertices as not visited and not part of recursion
-   // stack
+   /** Mark all the vertices as not visited and not part of recursion
+       stack */
    mapStringBool visited;
    mapStringBool recStack;
    std::vector<std::string>::const_iterator i;
@@ -335,8 +470,8 @@ bool Graph::isCyclic() const {
       recStack[*i] = false;
    }
  
-   // Call the recursive helper function to detect cycle in different
-   // DFS trees
+   /** Call the recursive helper function to detect cycle in different
+       DFS trees */
    for(i = _node.begin(); i != _node.end(); ++i) {
       if(_isCyclicUtil(*i, visited, recStack))
          return true;
@@ -344,13 +479,18 @@ bool Graph::isCyclic() const {
    return false;
 }
 
+/**
+   Helper function to detect cycle in different DFS trees
+
+   @return bool
+*/
 bool Graph::_isCyclicUtil(std::string v, mapStringBool visited, mapStringBool recStack) const {
    if(visited[v] == false) {
-      // Mark the current node as visited and part of recursion stack
+      /** Mark the current node as visited and part of recursion stack */
       visited[v]= true;
       recStack[v]= true;
  
-      // Recur for all the vertices adjacent to this vertex
+      /** Recur for all the vertices adjacent to this vertex */
       for(auto i = adjacent(v).begin(); i != adjacent(v).end(); ++i) {
          if(!visited[*i] && _isCyclicUtil(*i, visited, recStack))
             return true;
@@ -358,36 +498,41 @@ bool Graph::_isCyclicUtil(std::string v, mapStringBool visited, mapStringBool re
             return true;
       }
    }
-   recStack[v]= false;  // remove the vertex from recursion stack
+   /** remove the vertex from recursion stack */
+   recStack[v]= false;  
    return false;
 }
 
-// FIXED By Wyvilo
-// Assigns colors (starting from 0) to all vertices and prints
-// the assignment of colors
+/** 
+   Graph Coloring (Greedy Algorithm) :- FIXED By Wyvilo
+   Assigns colors (starting from 0) to all vertices and prints
+   the assignment of colors
+
+   @return void
+*/
 void Graph::coloring() {
    Graph Gt = this->transpose();
 
-   // remove common edges
+   /** remove common edges */
    for(auto e = this->_edge.begin(); e != this->_edge.end(); ++e)
       Gt.removeEdge(e->first, e->second);
 
-   // temporaly turn graph into undirected (if not)
+   /** temporaly turn graph into undirected (if not) */
    for(auto e = this->_edge.begin(); e != this->_edge.end(); ++e)
       this->addEdge(e->first, e->second, 1);
 
    std::map<std::string, int> result;
-   // Assign the first color to first vertex
+   /** Assign the first color to first vertex */
    result[*(_node.begin())] = 0;
 
-   // Initialize remaining V-1 vertices as unassigned
+   /** Initialize remaining V-1 vertices as unassigned */
    for(auto u = _node.begin() + 1; u != _node.end(); ++u)
       result[*u] = -1;  // no color is assigned to u
  
-   // Assign colors to remaining V-1 vertices
+   /** Assign colors to remaining V-1 vertices */
    for(auto u = _node.begin() + 1; u != _node.end(); ++u) {   
-      // Process all adjacent vertices and flag their colors
-      // as unavailable
+      /** Process all adjacent vertices and flag their colors
+          as unavailable */
       std::list<std::string> adj = adjacent(*u); 
       
       signed color = -1;
@@ -402,16 +547,94 @@ void Graph::coloring() {
             }
          } 
       }
-
-      result[*u] = color; // Assign the found color
+      /** Assign the found color */
+      result[*u] = color; 
    }
  
-   // print the result
+   /** print the result */
    for(auto u = _node.begin(); u != _node.end(); ++u) 
       std::cout << "Vertex " << *u << " --->  Color " << result[*u] << std::endl;
 
    for(auto e = Gt._edge.begin(); e != Gt._edge.end(); ++e)
       this->removeEdge(e->first, e->second);   
-
 }
 
+/**
+   @param  v       source node
+   @param  visited vector of boolean
+   @return void
+*/
+void Graph::_DFSUtil(std::string v, mapStringBool& visited) const {
+   /** Mark the current node as visited and print it */
+   visited[v] = true;
+   /** Recur for all the vertices adjacent to this vertex */
+   std::list<std::string>::iterator i;
+   std::list<std::string> adj = adjacent(v);
+   for(i = adj.begin(); i != adj.end(); ++i)
+      if(!visited[*i]) 
+         _DFSUtil(*i, visited);
+}
+
+/** 
+   Method to check if all non-zero degree vertices are connected.
+   It mainly does DFS traversal starting from
+
+   @return bool
+*/
+bool Graph::isConnected() const {
+   /** Mark all the vertices as not visited */
+   std::map<std::string, bool> visited;
+   std::vector<std::string>::const_iterator u;
+   for(u = _node.begin(); u != _node.end(); ++u) 
+      visited[*u] = false;
+ 
+   /** Find a vertex with non-zero degree */
+   for(u = _node.begin(); u != _node.end(); ++u)
+      if(adjacent(*u).size() != 0)
+         break;
+   std::string strU = *u;
+   unsigned lastNode = atoi(strU.c_str());
+   /** If there are no edges in the graph, return true */
+   if(lastNode == nodes())
+      return true;
+ 
+   /** Start DFS traversal from a vertex with non-zero degree */
+   _DFSUtil(*u, visited);
+ 
+   /** Check if all non-zero degree vertices are visited */
+   for(auto v = _node.begin(); v != _node.end(); ++v)
+      if(visited[*v] == false && adjacent(*v).size() > 0) 
+         return false;
+   return true;
+}
+
+/** 
+   The function returns one of the following values
+   0 --> If grpah is not Eulerian
+   1 --> If graph has an Euler path (Semi-Eulerian)
+   2 --> If graph has an Euler Circuit (Eulerian)  
+   
+   @return integer
+*/
+int Graph::isEulerian() const {
+   /** Check if all non-zero degree vertices are connected */
+   if(isConnected() == false) {
+      std::cout << "not connected" <<std::endl;
+      return 0;
+    }
+ 
+   /** Count vertices with odd degree */
+   int odd = 0;
+   for(auto v = _node.begin(); v != _node.end(); ++v)
+      if(adjacent(*v).size() & 1)
+         odd++;
+ 
+   /** If count is more than 2, then graph is not Eulerian */
+   if(odd > 2)
+      return 0;
+ 
+   /** If odd count is 2, then semi-eulerian.
+       If odd count is 0, then eulerian
+       Note that odd count can never be 1 for undirected graph */
+   return (odd)? 1 : 2;
+}

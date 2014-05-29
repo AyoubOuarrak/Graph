@@ -1,0 +1,21 @@
+\#\-Graph
+
+C++ graph library that offers the possibility to \-:
+
+
+\begin{DoxyItemize}
+\item Define empty Graph directed/undirected
+\item Define graph using regex
+\item Copy constructor
+\item Adding node
+\item Remove node
+\item Adding edge and weighted edge
+\item Remove edge
+\item Print to standard output
+\item Draw the graph using a \href{http://www.graphdracula.net/}{\tt javascript library}
+\item Other utility graph functions
+\end{DoxyItemize}
+
+\#\-Installation On linux run the command make
+
+\#\-Example Graph G1 = Graph\-::generate\-Random\-Graph(10); Graph G4(\-Graph\-::undirected); Graph G2(\char`\"{}a-\/g\char`\"{}, Graph\-::circular); Graph G3(\char`\"{}1-\/45\char`\"{}, Graph\-::random); G3.\-add\-Node(\char`\"{}46\char`\"{}); G4.\-add\-Edge(\char`\"{}3\char`\"{}, \char`\"{}2\char`\"{}); G4.\-add\-Edge(\char`\"{}23\char`\"{}, \char`\"{}34\char`\"{}, 5); ....... G4.\-print(); // print to standard output G4.\-draw(); //generate html page with graphical representation of the graph 
