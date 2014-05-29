@@ -1,0 +1,91 @@
+\hypertarget{namespaceutility}{\section{utility Namespace Reference}
+\label{namespaceutility}\index{utility@{utility}}
+}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename T $>$ }\\std\-::string \hyperlink{namespaceutility_a73ed4d02053486d2503f7e97e5914f50}{to\-\_\-string} (const T \&n)
+\item 
+std\-::pair$<$ int, int $>$ \hyperlink{namespaceutility_a7e03efd7d7194aaafccad8a2b5ff2d5b}{interval} (std\-::string s)
+\item 
+std\-::vector$<$ char $>$ \hyperlink{namespaceutility_a16b3d636474a10b8231ad786337bd36c}{regex\-Char} (std\-::string s)
+\item 
+std\-::vector$<$ int $>$ \hyperlink{namespaceutility_a201a20c977973f497871107c651cce5e}{regex\-Int} (std\-::string s)
+\item 
+bool \hyperlink{namespaceutility_ade004409d962567243f70199ccbb0110}{check\-If\-Interval} (std\-::string s)
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{namespaceutility_ade004409d962567243f70199ccbb0110}{\index{utility@{utility}!check\-If\-Interval@{check\-If\-Interval}}
+\index{check\-If\-Interval@{check\-If\-Interval}!utility@{utility}}
+\subsubsection[{check\-If\-Interval}]{\setlength{\rightskip}{0pt plus 5cm}bool utility\-::check\-If\-Interval (
+\begin{DoxyParamCaption}
+\item[{std\-::string}]{s}
+\end{DoxyParamCaption}
+)}}\label{namespaceutility_ade004409d962567243f70199ccbb0110}
+Check of s is a valid interval 
+\begin{DoxyParams}{Parameters}
+{\em s} & interval to check \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+bool 
+\end{DoxyReturn}
+\hypertarget{namespaceutility_a7e03efd7d7194aaafccad8a2b5ff2d5b}{\index{utility@{utility}!interval@{interval}}
+\index{interval@{interval}!utility@{utility}}
+\subsubsection[{interval}]{\setlength{\rightskip}{0pt plus 5cm}std\-::pair$<$int, int$>$ utility\-::interval (
+\begin{DoxyParamCaption}
+\item[{std\-::string}]{s}
+\end{DoxyParamCaption}
+)}}\label{namespaceutility_a7e03efd7d7194aaafccad8a2b5ff2d5b}
+Transform string 2-\/4 to pair $<$2, 4$>$ 
+\begin{DoxyParams}{Parameters}
+{\em s} & string to transform \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+pair of int 
+\end{DoxyReturn}
+\hypertarget{namespaceutility_a16b3d636474a10b8231ad786337bd36c}{\index{utility@{utility}!regex\-Char@{regex\-Char}}
+\index{regex\-Char@{regex\-Char}!utility@{utility}}
+\subsubsection[{regex\-Char}]{\setlength{\rightskip}{0pt plus 5cm}std\-::vector$<$char$>$ utility\-::regex\-Char (
+\begin{DoxyParamCaption}
+\item[{std\-::string}]{s}
+\end{DoxyParamCaption}
+)}}\label{namespaceutility_a16b3d636474a10b8231ad786337bd36c}
+a-\/d -\/$>$ \mbox{[}a, b, c, d\mbox{]} $\vert$ A-\/\-Z -\/$>$ \mbox{[}A, B, C, ..., Z\mbox{]} 
+\begin{DoxyParams}{Parameters}
+{\em s} & string to parse \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+vector of char 
+\end{DoxyReturn}
+\hypertarget{namespaceutility_a201a20c977973f497871107c651cce5e}{\index{utility@{utility}!regex\-Int@{regex\-Int}}
+\index{regex\-Int@{regex\-Int}!utility@{utility}}
+\subsubsection[{regex\-Int}]{\setlength{\rightskip}{0pt plus 5cm}std\-::vector$<$int$>$ utility\-::regex\-Int (
+\begin{DoxyParamCaption}
+\item[{std\-::string}]{s}
+\end{DoxyParamCaption}
+)}}\label{namespaceutility_a201a20c977973f497871107c651cce5e}
+1-\/4 -\/$>$ \mbox{[}1,2,3,4\mbox{]} 34-\/101 -\/$>$ \mbox{[}34,35,36,...,100,101\mbox{]} 
+\begin{DoxyParams}{Parameters}
+{\em s} & string to parse \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+vector of int 
+\end{DoxyReturn}
+\hypertarget{namespaceutility_a73ed4d02053486d2503f7e97e5914f50}{\index{utility@{utility}!to\-\_\-string@{to\-\_\-string}}
+\index{to\-\_\-string@{to\-\_\-string}!utility@{utility}}
+\subsubsection[{to\-\_\-string}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ std\-::string utility\-::to\-\_\-string (
+\begin{DoxyParamCaption}
+\item[{const T \&}]{n}
+\end{DoxyParamCaption}
+)}}\label{namespaceutility_a73ed4d02053486d2503f7e97e5914f50}
+Convert to string 
+\begin{DoxyParams}{Parameters}
+{\em n} & type to convert to string \\
+\hline
+\end{DoxyParams}
