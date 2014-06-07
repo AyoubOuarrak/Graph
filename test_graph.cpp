@@ -234,6 +234,62 @@ void testEulerian() {
       std::cout << "Graph has a Euler cycle \n";
 }
 
+void testBFS() {
+   std::cout << "**** test 17: BFS" << std::endl;
+   Graph g;
+   g.addEdge("0", "1");
+   g.addEdge("0", "2");
+   g.addEdge("1", "2");
+   g.addEdge("2", "0");
+   g.addEdge("2", "3");
+   g.addEdge("3", "3");
+   std::cout << std::endl;
+   std::cout << "Following is Breadth First Traversal (starting from vertex 2) \n";
+   std::cout << g << std::endl;
+   std::cout << std::endl;
+   g.BFS("2");
+   std::cout << std::endl;
+}
+
+void testDFS() {
+   std::cout << "**** test 18: DFS" << std::endl;
+   Graph g;
+   g.addEdge("0", "1");
+   g.addEdge("0", "2");
+   g.addEdge("1", "2");
+   g.addEdge("2", "0");
+   g.addEdge("2", "3");
+   g.addEdge("3", "3");
+   std::cout << std::endl;
+   std::cout << "Following is Depth First Traversal (starting from vertex 2) \n";
+   std::cout << g << std::endl;
+   std::cout << std::endl;
+   g.DFS("2");
+   std::cout << std::endl;
+}
+
+void testFloydWarshell() {
+   std::cout << "**** test 19: Floyd Warshall algorithm" << std::endl;
+   Graph g;
+   g.addNode("0");
+   g.addNode("1");
+   g.addNode("2");
+   g.addNode("3");
+
+   g.addEdge("0", "3", 9);
+   g.addEdge("0", "1", 5);
+   g.addEdge("1", "2", 3);
+   g.addEdge("2", "3", 1);
+
+   double** wMatrix = new double*[g.nodes()];
+   for(unsigned i = 0; i < g.nodes(); ++i)
+      wMatrix[i] = new double[g.nodes()];
+
+   std::cout << std::endl;
+   std::cout << g << std::endl;
+   g.floydWarshell(g.transpose().weightMatrix());
+
+}
 int main() {
    testRandomGraphGenerator();
    testGraphInterval();
@@ -245,4 +301,7 @@ int main() {
    testTranspose();
    testColoring();
    testEulerian();
+   testBFS();
+   testDFS();
+   testFloydWarshell();
 }

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['weight',['weight',['../classGraphLib_1_1Graph.html#a4139dd37d2c30e975c506f1f57a3d6ff',1,'GraphLib::Graph']]]
+  ['setweight',['setWeight',['../classGraphLib_1_1Graph.html#ad3df43d166c11ab232df2ffc2bce0061',1,'GraphLib::Graph']]]
 ];

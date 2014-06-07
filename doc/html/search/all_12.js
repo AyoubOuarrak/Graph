@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['_7egraph',['~Graph',['../classGraphLib_1_1Graph.html#a40bde368ad387204b3e1407fe6c93f51',1,'GraphLib::Graph']]]
+  ['undirected',['undirected',['../classGraphLib_1_1Graph.html#ac0c94d852cc820c10aefd1ef0f587fb0',1,'GraphLib::Graph']]],
+  ['utility',['utility',['../namespaceutility.html',1,'']]],
+  ['utility_2ehh',['Utility.hh',['../Utility_8hh.html',1,'']]]
 ];

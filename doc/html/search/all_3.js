@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['direct',['direct',['../classGraphLib_1_1Graph.html#a9425d5b9f754f74abd6030e2ece5d09d',1,'GraphLib::Graph']]],
-  ['directed',['directed',['../classGraphLib_1_1Graph.html#a3111bb6cc59aedbc4290ed1b37668336',1,'GraphLib::Graph']]],
-  ['draw',['draw',['../classGraphLib_1_1Graph.html#afd5a738fcda8957e55066fb1f5a6e59c',1,'GraphLib::Graph']]]
+  ['checkifinterval',['checkIfInterval',['../namespaceutility.html#ade004409d962567243f70199ccbb0110',1,'utility']]],
+  ['circular',['circular',['../classGraphLib_1_1Graph.html#ae60cf97b7bef2ca4d930b251581a3e7b',1,'GraphLib::Graph']]],
+  ['coloring',['coloring',['../classGraphLib_1_1Graph.html#abce64a2d34a4329d5342e575e467b49f',1,'GraphLib::Graph']]]
 ];

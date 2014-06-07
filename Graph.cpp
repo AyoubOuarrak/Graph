@@ -10,10 +10,15 @@
 #include <fstream>
 #include <climits>
 #include <ctime>
+#include <queue>
 #include "Graph.hh"
 #include "Utility.hh"
 
 using namespace GraphLib;
+
+/** Define Infinite as a large enough value. This value will be used
+  for vertices not connected to each other */
+#define INF 99999
 
 typedef std::pair<std::string, std::string> link;
 typedef std::map<std::string, bool> mapStringBool;
@@ -30,15 +35,6 @@ bool Graph::undirected = false;
 */
 Graph::Graph(bool graphType) {
    direct = graphType;
-}
-
-/** 
-  Create Graph with nodes from 1 to maxNodes
-  
-  @param maxNodes max nodes of the graph
-*/
-Graph::Graph(int maxNodes) {
-  
 }
 
 /**
@@ -289,9 +285,8 @@ void Graph::print(std::ostream& os) const {
 }
 
 /**
-   Max rank of a graph
+   adjacent list
 
-   @return unsigned
 */
 std::list<std::string> Graph::adjacent(std::string v) const {
    std::list<std::string> adj;
@@ -575,6 +570,71 @@ void Graph::_DFSUtil(std::string v, mapStringBool& visited) const {
          _DFSUtil(*i, visited);
 }
 
+void Graph::_DFSUtil2(std::string v, mapStringBool& visited) const {
+   /** Mark the current node as visited and print it */
+   visited[v] = true;
+   std::cout << v << " ";
+ 
+   /** Recur for all the vertices adjacent to this vertex */
+   std::list<std::string>::iterator i;
+   std::list<std::string> adj = adjacent(v);
+   for(i = adj.begin(); i != adj.end(); ++i)
+      if(!visited[*i]) 
+         _DFSUtil2(*i, visited);
+}
+
+/** 
+   DFS traversal of the vertices reachable from v. It uses recursive _DFSUtil()
+*/
+void Graph::DFS(std::string sourceNode) {
+   /** Mark all the vertices as not visited */
+   mapStringBool visited;
+   for(auto u = _node.begin(); u != _node.end(); ++u) 
+      visited[*u] = false;
+ 
+   // Call the recursive helper function to print DFS traversal
+   _DFSUtil2(sourceNode, visited);
+}
+
+/**
+   Breadth First Traversal for a Graph
+*/
+void Graph::BFS(std::string sourceNode) {
+   /** Mark all the vertices as not visited */
+   mapStringBool visited;
+   for(auto u = _node.begin(); u != _node.end(); ++u) 
+      visited[*u] = false;
+ 
+   /** Create a queue for BFS */
+   std::list<std::string> queue;
+ 
+   /** Mark the current node as visited and enqueue it */
+   visited[sourceNode] = true;
+   queue.push_back(sourceNode);
+ 
+   /** 'i' will be used to get all adjacent vertices of a vertex */
+   std::list<std::string>::iterator i;
+ 
+   while(!queue.empty()) {
+      /** Dequeue a vertex from queue and print it */
+      sourceNode = queue.front();
+      std::cout << sourceNode << " ";
+      queue.pop_front();
+ 
+      /** Get all adjacent vertices of the dequeued vertex s
+          If a adjacent has not been visited, then mark it visited
+          and enqueue it */
+      std::list<std::string>::iterator i;
+      std::list<std::string> adj = adjacent(sourceNode);
+      for(i = adj.begin(); i != adj.end(); ++i) {
+         if(!visited[*i]) {
+            visited[*i] = true;
+            queue.push_back(*i);
+         }
+      }
+   }
+}
+
 /** 
    Method to check if all non-zero degree vertices are connected.
    It mainly does DFS traversal starting from
@@ -637,4 +697,143 @@ int Graph::isEulerian() const {
        If odd count is 0, then eulerian
        Note that odd count can never be 1 for undirected graph */
    return (odd)? 1 : 2;
+}
+
+/** 
+   Convert adjacent list into a matrix
+*/
+int** Graph::fromListADJToMatrixADJ() {
+   /** matrix allocation */
+   int** ADJMatrix = new int*[nodes()];
+   for(unsigned i = 0; i < nodes(); ++i)
+      ADJMatrix[i] = new int[nodes()];
+
+   /** initialize matrix */
+   for(auto i = _node.begin(); i != _node.end(); ++i)
+      for(auto j = _node.begin(); j != _node.end(); ++j) 
+         ADJMatrix[atoi((*j).c_str())][atoi((*i).c_str())] = 0;
+
+   for(auto j = _node.begin(); j != _node.end(); ++j) {
+      std::list<std::string>::iterator k;
+      std::list<std::string> adj = adjacent(*j);
+      for(k = adj.begin(); k != adj.end(); ++k) {
+         if(direct)  
+            ADJMatrix[atoi((*k).c_str())][atoi((*j).c_str())] = 1;
+         else {
+            ADJMatrix[atoi((*j).c_str())][atoi((*k).c_str())] = 1;
+            ADJMatrix[atoi((*k).c_str())][atoi((*j).c_str())] = 1;
+         }
+      }
+   }
+
+   return ADJMatrix;
+}
+
+/**
+  @return matrix of edge's weight
+*/
+
+double** Graph::weightMatrix() {
+   /** matrix allocation */
+   int i, j, k;
+   double** wMatrix = new double*[nodes()];
+   for(unsigned i = 0; i < nodes(); ++i)
+      wMatrix[i] = new double[nodes()];
+
+    /** initialize matrix */
+   for(auto ii = _node.begin(); ii != _node.end(); ++ii) {
+      i = atoi((*ii).c_str());
+      for(auto jj = _node.begin(); jj != _node.end(); ++jj) {
+         j = atoi((*jj).c_str());
+         if(*ii == *jj)
+            wMatrix[j][i] = 0;
+         else
+            wMatrix[j][i] = INF;
+      }
+   }
+
+   for(auto jj = _node.begin(); jj != _node.end(); ++jj) {
+      j = atoi((*jj).c_str());
+      std::list<std::string>::iterator kk;
+      std::list<std::string> adj = adjacent(*jj);
+
+      for(kk = adj.begin(); kk != adj.end(); ++kk) {
+         k = atoi((*kk).c_str());
+         if(direct) {
+            wMatrix[k][j] = weight(*jj, *kk);
+         }
+         else {
+            wMatrix[j][k] = weight(*jj, *kk);
+            wMatrix[k][j] = weight(*jj, *kk);
+         }
+      }
+   }
+   return wMatrix;
+}
+
+/** 
+   Solves the all-pairs shortest path problem using Floyd Warshall algorithm
+*/
+void Graph::floydWarshell(double** graph) {
+   /** dist[][] will be the output matrix that will finally have the shortest
+       distances between every pair of vertices */
+   int i, j, k;
+   int** dist = new int*[nodes()];
+   for(unsigned i = 0; i < nodes(); ++i)
+      dist[i] = new int[nodes()];
+ 
+   /** Initialize the solution matrix same as input graph matrix. Or
+       we can say the initial values of shortest distances are based
+       on shortest paths considering no intermediate vertex. */
+   for(auto ii = _node.begin(); ii != _node.end(); ++ii) {
+      i = atoi((*ii).c_str());
+      for(auto jj = _node.begin(); jj != _node.end(); ++jj) {
+         j = atoi((*jj).c_str());
+         dist[i][j] = graph[i][j];
+      }
+   }
+ 
+   /** Add all vertices one by one to the set of intermediate vertices.
+       ---> Before start of a iteration, we have shortest distances between all
+       pairs of vertices such that the shortest distances consider only the
+       vertices in set {0, 1, 2, .. k-1} as intermediate vertices.
+       ----> After the end of a iteration, vertex no. k is added to the set of
+       intermediate vertices and the set becomes {0, 1, 2, .. k} */
+   for(auto kk = _node.begin(); kk != _node.end(); ++kk) {
+      /** Pick all vertices as source one by one */
+      k = atoi((*kk).c_str());
+      for(auto ii = _node.begin(); ii != _node.end(); ++ii) {
+         /** Pick all vertices as destination for the
+             above picked source */
+         i = atoi((*ii).c_str());
+         for(auto jj = _node.begin(); jj != _node.end(); ++jj) {
+            /** If vertex k is on the shortest path from
+                i to j, then update the value of dist[i][j] */
+            j = atoi((*jj).c_str());
+            if(dist[i][k] + dist[k][j] < dist[i][j])
+               dist[i][j] = dist[i][k] + dist[k][j];
+         }
+      }
+   }
+ 
+   // Print the shortest distance matrix
+   _printSolutionFloydWarshell(dist);
+}
+
+/* A utility function to print solution */
+void Graph::_printSolutionFloydWarshell(int** dist) {
+   std::cout << "Following matrix shows the shortest distances" 
+             << std::endl << " between every pair of vertices \n";
+   int i, j;
+   for(auto ii = _node.begin(); ii != _node.end(); ++ii) {
+      i = atoi((*ii).c_str());
+      for(auto jj = _node.begin(); jj != _node.end(); ++jj) {
+         j = atoi((*jj).c_str());
+         if(dist[i][j] == INF)
+            std::cout <<  "INF\t";
+         else
+            std::cout << dist[i][j] << "\t";
+      }
+      std::cout << std::endl;
+   }
 }

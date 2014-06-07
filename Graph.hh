@@ -36,14 +36,16 @@ public:
    Graph& operator=(const Graph&) = delete; 
 
    explicit Graph(bool graphType = directed);
-   explicit Graph(int maxNodes);
    
    Graph(std::string regex, int edgeMode, bool graphType = directed);  
    Graph(const Graph&); 
    /** default Distructor*/
    ~Graph() = default;  
 
-   Graph transpose();   
+   Graph transpose();  
+   void  DFS(std::string sourceNode); 
+   void  BFS(std::string sourceNode);
+   void  floydWarshell(double** graph);
    void  coloring();    
    void  draw() const;  
    void  print(std::ostream&) const;   
@@ -56,6 +58,9 @@ public:
    bool  isCyclic() const;
    bool  isConnected() const;
    int   isEulerian() const; 
+   int** fromListADJToMatrixADJ(); 
+
+   double** weightMatrix();
 
    unsigned minRank() const;
    unsigned maxRank() const;
@@ -92,11 +97,12 @@ private:
    inline std::map<link, double>   _EdgeWeight() const;  
    
    void _DFSUtil(std::string v, mapStringBool& visited) const;
+   void _DFSUtil2(std::string v, mapStringBool& visited) const;
    void _generateHtmlPage() const;   
    void _generateJavascriptPage() const;
    void _generateEdge(int);          
-
    bool _isCyclicUtil(std::string v, mapStringBool visited, mapStringBool recStack) const; 
+   void _printSolutionFloydWarshell(int** dist);
 
 /** class Graph */
 };  

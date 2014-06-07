@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['operator_3c_3c',['operator&lt;&lt;',['../namespaceGraphLib.html#af3b2bbc45436f913f252029fd7da7156',1,'GraphLib::operator&lt;&lt;()'],['../Graph__Inlines_8hh.html#a63ded41af685d3ec7ab3e6dcac27d7d2',1,'operator&lt;&lt;():&#160;Graph_Inlines.hh']]],
-  ['operator_3d',['operator=',['../classGraphLib_1_1Graph.html#acf3c67e9e04fd94b80556ccbfa492a2d',1,'GraphLib::Graph']]]
+  ['main',['main',['../test__graph_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4',1,'test_graph.cpp']]],
+  ['mapstringbool',['mapStringBool',['../classGraphLib_1_1Graph.html#a727ccf2fdc487a56e523a562f592b422',1,'GraphLib::Graph::mapStringBool()'],['../Graph_8cpp.html#a9693c7de146a7a214e9edb7601a336a5',1,'mapStringBool():&#160;Graph.cpp']]],
+  ['maxrank',['maxRank',['../classGraphLib_1_1Graph.html#a5f669ac551693108e3e2e7d4e6ce4ce8',1,'GraphLib::Graph']]],
+  ['minrank',['minRank',['../classGraphLib_1_1Graph.html#a12fe59e5f0093c54da5a3edd5a0325d2',1,'GraphLib::Graph']]]
 ];
