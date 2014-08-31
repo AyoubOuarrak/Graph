@@ -161,6 +161,7 @@ void Graph::removeNode(std::string node) {
    std::vector<std::string>::iterator v;
    std::vector<link>::iterator e;
    std::vector<link> edgeToRemove;
+   
    v = std::find(_node.begin(), _node.end(), node);
    if(v != _node.end()) {
       /** remove the edge connected to the node */
@@ -220,14 +221,14 @@ void Graph::addEdge(std::string fromNode, std::string toNode, double cost) {
    @return void
 */
 void Graph::removeEdge(std::string fromNode, std::string toNode) {
-   if(hasEdge(fromNode, toNode) && exist(fromNode) && exist(toNode)) {
+   if(hasEdge(fromNode, toNode)) {
       if(direct) {
          _edge.erase(std::find(_edge.begin(), _edge.end(), 
                                std::make_pair(fromNode, toNode)));
          _edgeWeight.erase(std::make_pair(fromNode, toNode));
       }
       /** undirected graph */
-      else { 
+      else {
          _edge.erase(std::find(_edge.begin(), _edge.end(), 
                                std::make_pair(fromNode, toNode)));
          _edge.erase(std::find(_edge.begin(), _edge.end(), 
@@ -820,7 +821,9 @@ void Graph::floydWarshell(double** graph) {
    _printSolutionFloydWarshell(dist);
 }
 
-/* A utility function to print solution */
+/** 
+   A utility function to print solution 
+*/
 void Graph::_printSolutionFloydWarshell(int** dist) {
    std::cout << "Following matrix shows the shortest distances" 
              << std::endl << " between every pair of vertices \n";
