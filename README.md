@@ -17,6 +17,8 @@ C++ graph library that offers the possibility to :
 On linux run the command make 
 
 #Example
+
+```{c++}
 Graph G1 = Graph::generateRandomGraph(10);   
 Graph G4(Graph::undirected);  
 Graph G2("a-g", Graph::circular);  
@@ -27,7 +29,7 @@ G4.addEdge("23", "34", 5);
 .......  
 G4.print();  // print to standard output  
 G4.draw();   //generate html page with graphical representation of the graph  
-
+```
 
 
 
